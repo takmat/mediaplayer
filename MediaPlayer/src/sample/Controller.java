@@ -3,12 +3,14 @@ package sample;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -19,12 +21,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,8 @@ public class Controller implements PlayList {
     Label nowPlaying;
     @FXML
     Label duration;
+    @FXML
+    Label volumeNumber;
 
 
 
@@ -58,12 +64,22 @@ public class Controller implements PlayList {
     @FXML
     private void initialize() {
         System.out.println("start");
+
+        MediaPlayButton.setPrefSize(71,71);
+
+        Bounds buttonBounds = MediaPlayButton.getBoundsInParent();
+        System.out.println(buttonBounds.getMaxX());
         playAndPause = new ImageView(this.play);
+        playAndPause.setFitWidth(71.0);
+        playAndPause.setFitHeight(71.0);
+        Circle c = new Circle(MediaPlayButton.getPrefWidth()/2,MediaPlayButton.getPrefHeight()/2,playAndPause.getFitWidth()/2);
+        MediaPlayButton.setClip(c);
         MediaPlayButton.setGraphic(this.playAndPause);
+        //MediaPlayButton
         MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
 
-        playAndPause.setFitWidth(75.0D);
-        playAndPause.setFitHeight(75.0D);
+
+
 
     }
 
@@ -103,16 +119,26 @@ public class Controller implements PlayList {
 
 
         for(File f : list){
-            playList.add(f.toURI().toString());
-            Music music = new Music(f.toURI().toString(),mediaPlayer);
+            if(playList.contains(f.toURI().toString())){
 
-            playListOfMusic.add(music);
-            music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration);
-            addContextMenuToMusic(music);
-            listOfMedia.getChildren().add(music);
+            }
+            else{
+                playList.add(f.toURI().toString());
+                Music music = new Music(f.toURI().toString(),mediaPlayer);
+                playListOfMusic.add(music);
+                music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber);
+                addContextMenuToMusic(music);
+                listOfMedia.getChildren().add(music);
+            }
+
         }
         if(mediaPlayer.isNotNull().getValue())
             mediaPlayer.get().dispose();
+
+        NumberFormat formatter = NumberFormat.getIntegerInstance();
+        formatter.setMinimumIntegerDigits(2);
+
+
 
         //bindMediaPlayer();
 

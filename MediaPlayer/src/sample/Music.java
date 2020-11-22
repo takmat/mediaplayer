@@ -14,6 +14,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 public class Music extends Pane implements PlayList{
@@ -29,7 +30,7 @@ public class Music extends Pane implements PlayList{
     Label length;
     private Slider time,volumeAdjuster;
     private ImageView playAndPause;
-    private Label nowPlayed,duration;
+    private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
 
     public Label getMediaTitle() {
@@ -98,12 +99,13 @@ public class Music extends Pane implements PlayList{
         mediaPlayer.set(new MediaPlayer(music));
         //length.setText(music.getDuration().toString());
     }
-    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration){
+    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
         this.playAndPause = playAndPause;
         this.duration=duration;
+        this.volume=volume;
         bindControlls(this);
     }
     private void loadUI(){
@@ -140,9 +142,11 @@ public class Music extends Pane implements PlayList{
     }
 
     private void bindControlls(Music m){
+        DecimalFormat formatter = new DecimalFormat("00");
         volumeAdjuster.setValue(mediaPlayer.get().getVolume()*100);
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
+            volume.setText((int)volumeAdjuster.getValue()+"%");
         });
 
         mediaPlayer.get().statusProperty().addListener((observable, oldValue, newValue) -> {
@@ -151,7 +155,7 @@ public class Music extends Pane implements PlayList{
 
                     int min = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()/60);
                     int sec = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()%60);
-                    m.length.setText(min+":"+sec);
+                    m.length.setText(formatter.format(min)+":"+formatter.format(sec));
 
 
             }
@@ -171,7 +175,7 @@ public class Music extends Pane implements PlayList{
             int currentmin = (int) newValue.toSeconds()/60;
             int currentsec = (int) newValue.toSeconds()%60;
             //length.setText(min+":"+sec);
-            m.durationProperty.set(currentmin+":"+currentsec +" / "+m.length.getText());
+            m.durationProperty.set(formatter.format(currentmin)+":"+formatter.format(currentsec) +" / "+m.length.getText());
             duration.textProperty().bind(m.durationProperty);
         });
         time.setOnMousePressed(event -> {
@@ -180,5 +184,6 @@ public class Music extends Pane implements PlayList{
         time.setOnMouseDragged(event -> {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
         });
+
     }
 }
