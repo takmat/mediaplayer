@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="61.0" prefWidth="260.0" style="-fx-background-color: #cccccc;" type="Pane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="64.0" prefWidth="260.0">
@@ -30,7 +29,7 @@
             </VBox>
             <VBox alignment="BOTTOM_LEFT" prefHeight="64.0" prefWidth="55.0">
                <children>
-                  <Label fx:id="length" text="Hossz">
+                  <Label fx:id="length">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>

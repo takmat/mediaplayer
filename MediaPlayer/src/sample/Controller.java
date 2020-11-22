@@ -47,6 +47,8 @@ public class Controller implements PlayList {
     Slider volumeAdjuster;
     @FXML
     Label nowPlaying;
+    @FXML
+    Label duration;
 
 
 
@@ -105,17 +107,17 @@ public class Controller implements PlayList {
             Music music = new Music(f.toURI().toString(),mediaPlayer);
 
             playListOfMusic.add(music);
-            music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying);
+            music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration);
             addContextMenuToMusic(music);
             listOfMedia.getChildren().add(music);
         }
         if(mediaPlayer.isNotNull().getValue())
             mediaPlayer.get().dispose();
 
-        bindMediaPlayer();
+        //bindMediaPlayer();
 
-        music = new Media(playList.get(0));
-        mediaPlayer.set(new MediaPlayer(music));
+        //music = new Media(playList.get(0));
+        //mediaPlayer.set(new MediaPlayer(music));
         //mediaView=new MediaView(mediaPlayer);
 
         mediaPlayer.get().setVolume(0.5);
