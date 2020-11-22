@@ -1,20 +1,54 @@
 package sample;
 
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.MapChangeListener;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.Group;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
-public class Controller {
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Controller implements PlayList {
     @FXML
     Button MediaPlayButton;
-    final Image play = new Image("sample/play.png");
-    final Image pause = new Image("sample/pause.png");
+
     private ImageView playAndPause;
     @FXML
-    MediaView mediaView;
+    private MediaView mediaView;
+    SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
+    @FXML
+    Button getFiles;
+    private Media music;
+    @FXML
+    FlowPane listOfMedia;
+    @FXML
+    Slider time;
+    @FXML
+    Slider volumeAdjuster;
+    @FXML
+    Label nowPlaying;
+
+
 
     public Controller() {
     }
@@ -22,17 +56,119 @@ public class Controller {
     @FXML
     private void initialize() {
         System.out.println("start");
-        this.playAndPause = new ImageView(this.play);
-        this.playAndPause.setFitWidth(75.0D);
-        this.playAndPause.setFitHeight(75.0D);
-        this.MediaPlayButton.setGraphic(this.playAndPause);
+        playAndPause = new ImageView(this.play);
+        MediaPlayButton.setGraphic(this.playAndPause);
+        MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
+
+        playAndPause.setFitWidth(75.0D);
+        playAndPause.setFitHeight(75.0D);
+
     }
 
-    private void play() {
-        this.playAndPause.setImage(this.pause);
+    @FXML
+    private void playAndPauseMedia() {
+        if(mediaPlayer.get().getStatus().equals(MediaPlayer.Status.PLAYING)){
+                mediaPlayer.get().pause();
+        }
+        else {
+
+
+            mediaPlayer.get().getMedia().getMetadata().addListener((MapChangeListener<String, Object>) change -> {
+                String artist = "", title = "";
+                if ("artist".equals(change.getKey())) {
+                    artist = change.getValueAdded().toString();
+                } else if ("title".equals(change.getKey())) {
+                    title = change.getValueAdded().toString();
+                }
+                nowPlaying.setText(artist + " " + title);
+            });
+            mediaPlayer.get().play();
+
+
+
+        }
+
+    }
+    @FXML
+    private void getFiles(){
+        FileChooser fc = new FileChooser();
+        Stage stage = new Stage();
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Médiafájlok","*.mp3") //,"*.jpeg","*.jpg","*.bmp"
+        );
+        List<File> list =
+                fc.showOpenMultipleDialog(stage);
+
+
+        for(File f : list){
+            playList.add(f.toURI().toString());
+            Music music = new Music(f.toURI().toString(),mediaPlayer);
+
+            playListOfMusic.add(music);
+            music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying);
+            addContextMenuToMusic(music);
+            listOfMedia.getChildren().add(music);
+        }
+        if(mediaPlayer.isNotNull().getValue())
+            mediaPlayer.get().dispose();
+
+        bindMediaPlayer();
+
+        music = new Media(playList.get(0));
+        mediaPlayer.set(new MediaPlayer(music));
+        //mediaView=new MediaView(mediaPlayer);
+
+        mediaPlayer.get().setVolume(0.5);
+
+    }
+    private void addContextMenuToMusic(Music m){
+        m.setOnContextMenuRequested( event -> {
+            MusicContextMenu musicContextMenu = new MusicContextMenu(m);
+            musicContextMenu.show(m,event.getScreenX(),event.getScreenY());
+        });
+    }
+    private class MusicContextMenu extends ContextMenu {
+        public MusicContextMenu(Music music){
+            MenuItem editpane = new MenuItem("Törlés");
+            editpane.setOnAction(event ->
+            {
+                playList.remove(music.getMediaPath());
+                listOfMedia.getChildren().remove(music);
+            });
+
+            getItems().add(editpane);
+        }
     }
 
-    private void pause() {
-        this.playAndPause.setImage(this.play);
+    private void bindMediaPlayer(){
+        volumeAdjuster.setValue(mediaPlayer.get().getVolume()*100);
+        volumeAdjuster.valueProperty().addListener(observable -> {
+            mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
+        });
+
+        mediaPlayer.get().statusProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(MediaPlayer.Status.READY)){
+                time.setMax(mediaPlayer.get().getMedia().getDuration().toSeconds());
+            }
+            if(newValue.equals(MediaPlayer.Status.PLAYING)){
+                playAndPause.setImage(pause);
+            }
+            else if(newValue.equals(MediaPlayer.Status.PAUSED)){
+                playAndPause.setImage(play);
+            }
+        });
+
+        mediaPlayer.get().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            time.setValue(newValue.toSeconds());
+        });
+        time.setOnMousePressed(event -> {
+            mediaPlayer.get().seek(Duration.seconds(time.getValue()));
+        });
+        time.setOnMouseDragged(event -> {
+            mediaPlayer.get().seek(Duration.seconds(time.getValue()));
+        });
     }
+
+
+
 }
