@@ -194,9 +194,13 @@ public class Controller implements PlayList {
                 listOfMedia.getChildren().add(music);
             }
 
+            }
         }
-        if(mediaPlayer.isNotNull().getValue())
+        if(mediaPlayer.isNotNull().getValue()){
             mediaPlayer.get().dispose();
+            mediaPlayer.get().setVolume(0.5);
+        }
+
 
         NumberFormat formatter = NumberFormat.getIntegerInstance();
         formatter.setMinimumIntegerDigits(2);
@@ -209,7 +213,7 @@ public class Controller implements PlayList {
         //mediaView=new MediaView(mediaPlayer);
 
         mediaPlayer.get().setVolume(0.5);
-        }
+
 
     }
     private void addContextMenuToMusic(Music m){
