@@ -89,8 +89,6 @@ public class Controller implements PlayList {
                 mediaPlayer.get().pause();
         }
         else {
-
-
             mediaPlayer.get().getMedia().getMetadata().addListener((MapChangeListener<String, Object>) change -> {
                 String artist = "", title = "";
                 if ("artist".equals(change.getKey())) {
@@ -101,6 +99,7 @@ public class Controller implements PlayList {
                 nowPlaying.setText(artist + " " + title);
             });
             mediaPlayer.get().play();
+            
 
 
 
@@ -117,23 +116,28 @@ public class Controller implements PlayList {
         List<File> list =
                 fc.showOpenMultipleDialog(stage);
 
+        if(list != null){
+            for(File f : list){
+                if(playList.contains(f.toURI().toString())){
 
-        for(File f : list){
-            if(playList.contains(f.toURI().toString())){
+                }
+                else{
+                    playList.add(f.toURI().toString());
+                    System.out.println(f.toURI().toString());
+                    Music music = new Music(f.toURI().toString(),mediaPlayer);
+                    playListOfMusic.add(music);
+                    music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber);
+                    addContextMenuToMusic(music);
+                    listOfMedia.getChildren().add(music);
+                }
 
             }
-            else{
-                playList.add(f.toURI().toString());
-                Music music = new Music(f.toURI().toString(),mediaPlayer);
-                playListOfMusic.add(music);
-                music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber);
-                addContextMenuToMusic(music);
-                listOfMedia.getChildren().add(music);
-            }
-
         }
-        if(mediaPlayer.isNotNull().getValue())
+        if(mediaPlayer.isNotNull().getValue()){
             mediaPlayer.get().dispose();
+            mediaPlayer.get().setVolume(0.5);
+        }
+            
 
         NumberFormat formatter = NumberFormat.getIntegerInstance();
         formatter.setMinimumIntegerDigits(2);
@@ -146,7 +150,7 @@ public class Controller implements PlayList {
         //mediaPlayer.set(new MediaPlayer(music));
         //mediaView=new MediaView(mediaPlayer);
 
-        mediaPlayer.get().setVolume(0.5);
+        
 
     }
     private void addContextMenuToMusic(Music m){
