@@ -3,6 +3,7 @@ package sample;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public interface PlayList {
@@ -15,4 +16,5 @@ public interface PlayList {
     ImageView prevButtonImage = new ImageView(prev);
     ImageView nextButtonImage = new ImageView(next);
 
+    DecimalFormat formatter = new DecimalFormat("00");
 }

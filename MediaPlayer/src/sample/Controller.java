@@ -79,9 +79,6 @@ public class Controller implements PlayList {
         System.out.println("start");
 
         MediaPlayButton.setPrefSize(71,71);
-
-        Bounds buttonBounds = MediaPlayButton.getBoundsInParent();
-        System.out.println(buttonBounds.getMaxX());
         playAndPause = new ImageView(this.play);
         playAndPause.setFitWidth(71.0);
         playAndPause.setFitHeight(71.0);
@@ -119,7 +116,6 @@ public class Controller implements PlayList {
         previousMedia.setOnAction(event -> {
             prevMedia();
         });
-//time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber,currentMusic
         mediaList = new MediaList(time,volumeAdjuster,nowPlaying,duration,volumeNumber,mediaPlayer.get());
 
     }
@@ -153,7 +149,7 @@ public class Controller implements PlayList {
         else {
 
 
-            mediaPlayer.get().getMedia().getMetadata().addListener((MapChangeListener<String, Object>) change -> {
+            /*mediaPlayer.get().getMedia().getMetadata().addListener((MapChangeListener<String, Object>) change -> {
                 String artist = "", title = "";
                 if ("artist".equals(change.getKey())) {
                     artist = change.getValueAdded().toString();
@@ -161,7 +157,7 @@ public class Controller implements PlayList {
                     title = change.getValueAdded().toString();
                 }
                 nowPlaying.setText(artist + " " + title);
-            });
+            });*/
             mediaPlayer.get().play();
 
 
@@ -196,20 +192,9 @@ public class Controller implements PlayList {
 
             }
         }
-        if(mediaPlayer.isNotNull().getValue()){
-            mediaPlayer.get().dispose();
-            mediaPlayer.get().setVolume(0.5);
-        }
-
-
-        NumberFormat formatter = NumberFormat.getIntegerInstance();
-        formatter.setMinimumIntegerDigits(2);
-
-
-
         //bindMediaPlayer();
-
-       mediaList.startPlay();
+        mediaList.getDurations();
+        //mediaList.startPlay();
         //mediaView=new MediaView(mediaPlayer);
 
         mediaPlayer.get().setVolume(0.5);
@@ -228,6 +213,7 @@ public class Controller implements PlayList {
             editpane.setOnAction(event ->
             {
                 playList.remove(music.getMediaPath());
+                playListOfMusic.remove(music);
                 listOfMedia.getChildren().remove(music);
             });
 
