@@ -2,8 +2,9 @@ package sample.entity;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import sample.interfaces.PlayList;
 
-public class Statistics implements PlayList{
+public class Statistics implements PlayList {
     @FXML
     Label playlistLength;
     @FXML

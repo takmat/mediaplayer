@@ -22,7 +22,6 @@ import sample.interfaces.PlayList;
 public class Music extends Pane implements PlayList{
     private Media music;
     private String mediaPath;
-    //private MediaPlayer mediaPlayer;
     SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
     @FXML
     Label mediaTitle;
@@ -135,7 +134,7 @@ public class Music extends Pane implements PlayList{
     }
     private void loadUI(){
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("music.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/fxml/music.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         try {
@@ -220,8 +219,6 @@ public class Music extends Pane implements PlayList{
                     int min = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()/60);
                     int sec = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()%60);
                     m.length.setText(formatter.format(min)+":"+formatter.format(sec));
-
-
             }
             if(newValue.equals(MediaPlayer.Status.PLAYING)){
                 playAndPause.setImage(pause);

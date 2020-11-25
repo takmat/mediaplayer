@@ -10,12 +10,11 @@ import java.util.ArrayList;
 public interface PlayList {
      ArrayList<String> playList = new ArrayList<>();
     ArrayList<Music> playListOfMusic = new ArrayList<>();
-    final Image play = new Image("sample/play.png");
-    final Image pause = new Image("sample/pause.png");
-    final Image prev = new Image("sample/prev.png");
-    final Image next = new Image("sample/next.png");
+    Image play = new Image("sample/pictures/play.png");
+    Image pause = new Image("sample/pictures/pause.png");
+    Image prev = new Image("sample/pictures/prev.png");
+    Image next = new Image("sample/pictures/next.png");
     ImageView prevButtonImage = new ImageView(prev);
     ImageView nextButtonImage = new ImageView(next);
-
     DecimalFormat formatter = new DecimalFormat("00");
 }
