@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sample;
+package sample.entity;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -39,7 +39,7 @@ public class Spectrum {
         bc.getData().add(series1);
         bc.getData().add(series2);
         mediaPlayer.get().setAudioSpectrumListener((double d, double d1, float[] magnitudes , float[] phases) -> {
-            for(int i=0;i<magnitudes.length;i++){
+            for(int i=0;i<magnitudes.length;i++){   
                 series1Data[i].setYValue((magnitudes[i]+60)); //Top Series
                 series2Data[i].setYValue(-(magnitudes[i]+60));//Bottom series
             }
@@ -52,6 +52,11 @@ public class Spectrum {
         this.yAxis = yAxis;
         this.bc = bc;
         this.mediaPlayer = mediaPlayer;
+       
+        
+        
+    }
+    public void initSpectrumChart(CategoryAxis xAxis, NumberAxis yAxis, BarChart<String,Number> bc,  SimpleObjectProperty<MediaPlayer> mediaPlayer){
         bc.setLegendVisible(false);
         bc.setAnimated(false);
         bc.setBarGap(0);
@@ -69,8 +74,6 @@ public class Spectrum {
         bc.getXAxis().setOpacity(0);
         bc.getXAxis().setTickLabelsVisible(false);
         bc.getXAxis().setOpacity(0);
-        
-        
     }
     private XYChart.Data[] initXYChart(XYChart.Series<String,Number> series){
         XYChart.Data[] seriesData = new XYChart.Data[128];

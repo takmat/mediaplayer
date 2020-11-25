@@ -1,6 +1,7 @@
-package sample;
+package sample.entity;
 
 
+import sample.entity.Music;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
+import sample.inter.PlayList;
 
 public class MediaList implements PlayList {
     private Music currentMusic;

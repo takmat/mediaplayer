@@ -1,5 +1,9 @@
-package sample;
+package sample.controller;
 
+import sample.entity.MediaList;
+import sample.entity.Statistics;
+import sample.entity.Spectrum;
+import sample.entity.Music;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -28,6 +32,7 @@ import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import sample.inter.PlayList;
 
 public class Controller implements PlayList {
 
@@ -37,7 +42,7 @@ public class Controller implements PlayList {
     private ImageView playAndPause;
     @FXML
     private MediaView mediaView;
-    SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
+    SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();;
     @FXML
     Button getFiles;
     private Media music;
@@ -98,6 +103,7 @@ public class Controller implements PlayList {
         MediaPlayButton.setClip(c);
         MediaPlayButton.setGraphic(this.playAndPause);
         //MediaPlayButton
+        
         MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
         System.out.println(previousMedia.getWidth());
 
@@ -109,7 +115,8 @@ public class Controller implements PlayList {
             prevMedia();
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
-
+        spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
+        
     }
 
     private void nextMedia() {
@@ -168,12 +175,13 @@ public class Controller implements PlayList {
         );
         List<File> list
                 = fc.showOpenMultipleDialog(stage);
-
+        if(mediaPlayer.isNotNull().get()){
+            mediaPlayer.get().stop();
+            spectrum.stopSpectrumChart();
+        }
         if (list != null) {
             for (File f : list) {
-                if (playList.contains(f.toURI().toString())) {
-
-                } else {
+                if (!playList.contains(f.toURI().toString())) {
                     playList.add(f.toURI().toString());
                     Music music = new Music(f.toURI().toString(), mediaPlayer);
                     playListOfMusic.add(music);
@@ -189,8 +197,9 @@ public class Controller implements PlayList {
         mediaList.getDurations();
         //mediaList.startPlay();
         //mediaView=new MediaView(mediaPlayer);
-
-        mediaPlayer.get().setVolume(0.5);
+        if(mediaPlayer.isNotNull().get()){
+            mediaPlayer.get().setVolume(0.5);
+        }
 
     }
 

@@ -1,4 +1,4 @@
-package sample;
+package sample.entity;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,12 +17,13 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Map;
+import sample.inter.PlayList;
 
 public class Music extends Pane implements PlayList{
     private Media music;
     private String mediaPath;
     //private MediaPlayer mediaPlayer;
-    SimpleObjectProperty<MediaPlayer> mediaPlayer;
+    SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
     @FXML
     Label mediaTitle;
     @FXML
@@ -86,7 +87,6 @@ public class Music extends Pane implements PlayList{
 
         this.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
-
                 for(Music m : playListOfMusic){
                     isPlayed(m,0);
                 }
