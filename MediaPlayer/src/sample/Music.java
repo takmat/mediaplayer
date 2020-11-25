@@ -14,6 +14,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Map;
 
@@ -28,11 +29,25 @@ public class Music extends Pane implements PlayList{
     Label performer;
     @FXML
     Label length;
+    private int durationOfMusic=0;
     private Slider time,volumeAdjuster;
     private ImageView playAndPause;
     private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
-    private Spectrum spectrum;
+    private MediaList mediaList;
+    private Spectrum spectrum = new Spectrum();
+
+    public Media getMusic() {
+        return music;
+    }
+
+    public int getDurationOfMusic() {
+        return durationOfMusic;
+    }
+
+    public void setDurationOfMusic(int durationOfMusic) {
+        this.durationOfMusic = durationOfMusic;
+    }
 
     public Label getMediaTitle() {
         return mediaTitle;
@@ -52,13 +67,6 @@ public class Music extends Pane implements PlayList{
         performer.textProperty().bind(artist);
         mediaTitle.textProperty().bind(title);
         mediaPlayer.set(new MediaPlayer(music));
-       /* mediaPlayer.get().setOnReady(() -> {
-            for (Map.Entry<String, Object> entry : music.getMetadata().entrySet()){
-                //System.out.println(entry.getKey() + ": " + entry.getValue());
-            }
-            System.out.println("dur: "+music.getDuration().toSeconds());
-        });*/
-
         music.getMetadata().addListener((MapChangeListener<String,Object>) change ->{
             if (change.wasAdded()) { System.out.println(change.getKey() + " : " + change.getValueAdded()); }
             if(change.wasAdded()){
@@ -75,38 +83,53 @@ public class Music extends Pane implements PlayList{
         });
 
 
+
         this.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
 
-                double volume = 0;
-                if(mediaPlayer.isNotNull().getValue()){
-                    volume=mediaPlayer.get().getVolume();
-                    mediaPlayer.get().dispose();
+                for(Music m : playListOfMusic){
+                    isPlayed(m,0);
                 }
-                mediaPlayer.set(new MediaPlayer(music));
-                bindControlls(this);
-                volumeAdjuster.setValue(volume*100);
-                mediaPlayer.get().setVolume(volume);
-                nowPlayed.setText(mediaTitle.getText());
-                mediaPlayer.get().play();
-                spectrum.startSpectrumChart();
-                mediaPlayer.get().setOnEndOfMedia(() ->
-                        nextMedia());
+                playThis();
 
             }
         });
         if(mediaPlayer.isNotNull().getValue())
         mediaPlayer.get().dispose();
         mediaPlayer.set(new MediaPlayer(music));
-        //length.setText(music.getDuration().toString());
+
     }
-    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume, Spectrum spectrum){
+
+    public void playThis() {
+        double volume = 0;
+        if(mediaPlayer.isNotNull().getValue()){
+            volume=mediaPlayer.get().getVolume();
+            mediaPlayer.get().dispose();
+        }
+        mediaList.setCurrentMusic(this);
+        isPlayed(this,1);
+        mediaPlayer.set(new MediaPlayer(music));
+        bindControlls(this);
+        volumeAdjuster.setValue(volume*100);
+        mediaPlayer.get().setVolume(volume);
+        nowPlayed.setText(mediaTitle.getText());
+        mediaPlayer.get().play();
+        spectrum.startSpectrumChart();
+        mediaPlayer.get().setOnEndOfMedia(() ->{
+                    isPlayed(this,0);
+                    nextMedia();
+                }
+                );
+    }
+
+    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaList mediaList, Spectrum spectrum){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
         this.playAndPause = playAndPause;
         this.duration=duration;
         this.volume=volume;
+        this.mediaList = mediaList;
         this.spectrum = spectrum;
         bindControlls(this);
     }
@@ -121,7 +144,16 @@ public class Music extends Pane implements PlayList{
 
         }
     }
-    private void nextMedia(){
+
+    public void isPlayed(Music m,int switcher){
+        if(switcher==0){
+            m.setStyle("-fx-background-color: #cccccc;");
+        }
+        else if(switcher==1){
+            m.setStyle("-fx-background-color: #add8e6 ;");
+        }
+    }
+    public void nextMedia(){
         double volume2 = 0;
 
         if((playListOfMusic.indexOf(this)+1)<playListOfMusic.size()){
@@ -130,6 +162,8 @@ public class Music extends Pane implements PlayList{
                 mediaPlayer.get().dispose();
             }
             Music nextMedia = playListOfMusic.get(playListOfMusic.indexOf(this)+1);
+            isPlayed(mediaList.getCurrentMusic(),0);
+            mediaList.setCurrentMusic(nextMedia);
             mediaPlayer.set(new MediaPlayer(nextMedia.music));
             // nowPlayed.setText(nextMedia.getMediaPath().substring(nextMedia.getMediaPath().lastIndexOf("/")+1));
             nowPlayed.setText(nextMedia.getMediaTitle().getText());
@@ -139,13 +173,39 @@ public class Music extends Pane implements PlayList{
             //nowPlayed.setText(mediaTitle.getText());
             mediaPlayer.get().play();
             spectrum.startSpectrumChart();
+            isPlayed(nextMedia,1);
+
+        }
+
+    }
+
+    public void prevMedia(){
+        double volume2 = 0;
+
+        if((playListOfMusic.indexOf(this)-1)>=0){
+            if(mediaPlayer.isNotNull().getValue()){
+                volume2=mediaPlayer.get().getVolume();
+                mediaPlayer.get().dispose();
+            }
+            Music nextMedia = playListOfMusic.get(playListOfMusic.indexOf(this)-1);
+            isPlayed(mediaList.getCurrentMusic(),0);
+            mediaList.setCurrentMusic(nextMedia);
+            mediaPlayer.set(new MediaPlayer(nextMedia.music));
+            // nowPlayed.setText(nextMedia.getMediaPath().substring(nextMedia.getMediaPath().lastIndexOf("/")+1));
+            nowPlayed.setText(nextMedia.getMediaTitle().getText());
+            bindControlls(nextMedia);
+            volumeAdjuster.setValue(volume2*100);
+            mediaPlayer.get().setVolume(volume2);
+            //nowPlayed.setText(mediaTitle.getText());
+            mediaPlayer.get().play();
+            spectrum.startSpectrumChart();
+            isPlayed(nextMedia,1);
 
         }
 
     }
 
     private void bindControlls(Music m){
-        DecimalFormat formatter = new DecimalFormat("00");
         volumeAdjuster.setValue(mediaPlayer.get().getVolume()*100);
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
@@ -154,6 +214,7 @@ public class Music extends Pane implements PlayList{
 
         mediaPlayer.get().statusProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals(MediaPlayer.Status.READY)){
+                m.durationOfMusic=(int)mediaPlayer.get().getMedia().getDuration().toSeconds();
                 time.setMax(mediaPlayer.get().getMedia().getDuration().toSeconds());
 
                     int min = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()/60);
@@ -189,5 +250,4 @@ public class Music extends Pane implements PlayList{
         });
 
     }
-    
 }

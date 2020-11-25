@@ -27,12 +27,15 @@ public class Spectrum {
     @FXML
     BarChart<String,Number>  bc;
     SimpleObjectProperty<MediaPlayer> mediaPlayer;
-    private XYChart.Series<String,Number> series1 = new XYChart.Series<> ();
-    private XYChart.Series<String,Number> series2 = new XYChart.Series<> ();
+    private XYChart.Series<String,Number> series1 ;
+    private XYChart.Series<String,Number> series2 ;
     
     public void startSpectrumChart(){
+        series1 = new XYChart.Series<> ();
+        series2 = new XYChart.Series<> ();
         XYChart.Data[] series1Data = initXYChart(series1);
         XYChart.Data[] series2Data = initXYChart(series2);
+        bc.getData().clear();
         bc.getData().add(series1);
         bc.getData().add(series2);
         mediaPlayer.get().setAudioSpectrumListener((double d, double d1, float[] magnitudes , float[] phases) -> {
@@ -62,6 +65,11 @@ public class Spectrum {
         yAxis.setTickLabelsVisible(false);
         xAxis.setOpacity(0);
         yAxis.setOpacity(0);
+        bc.getYAxis().setTickLabelsVisible(false);
+        bc.getXAxis().setOpacity(0);
+        bc.getXAxis().setTickLabelsVisible(false);
+        bc.getXAxis().setOpacity(0);
+        
         
     }
     private XYChart.Data[] initXYChart(XYChart.Series<String,Number> series){
