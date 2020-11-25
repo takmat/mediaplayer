@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="506.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <bottom>
       <VBox prefHeight="100.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
@@ -111,12 +111,12 @@
       </MenuBar>
    </top>
    <left>
-      <BarChart fx:id="bc" BorderPane.alignment="CENTER" animated="false" >
+      <BarChart fx:id="bc" animated="false" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
         <xAxis>
           <CategoryAxis side="BOTTOM" fx:id="xAxis" />
         </xAxis>
         <yAxis>
-          <NumberAxis fx:id="yAxis" side="LEFT" />
+          <NumberAxis fx:id="yAxis" side="LEFT" visible="false" />
         </yAxis>
       </BarChart>
    </left>
