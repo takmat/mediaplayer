@@ -17,7 +17,7 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Map;
-import sample.inter.PlayList;
+import sample.interfaces.PlayList;
 
 public class Music extends Pane implements PlayList{
     private Media music;

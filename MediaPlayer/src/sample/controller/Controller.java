@@ -32,7 +32,7 @@ import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import sample.inter.PlayList;
+import sample.interfaces.PlayList;
 
 public class Controller implements PlayList {
 

@@ -1,4 +1,4 @@
-package sample.inter;
+package sample.interfaces;
 
 import sample.entity.Music;
 import javafx.scene.image.Image;
