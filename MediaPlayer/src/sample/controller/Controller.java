@@ -1,9 +1,7 @@
 package sample.controller;
 
-import sample.entity.MediaList;
-import sample.entity.Statistics;
-import sample.entity.Spectrum;
-import sample.entity.Music;
+import javafx.stage.Modality;
+import sample.entity.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,11 +9,11 @@ import javafx.scene.control.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.StageStyle;
-import java.io.IOException;
+
+import java.io.*;
+
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.media.Media;
@@ -26,8 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.text.NumberFormat;
+import java.nio.file.Paths;
 import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -66,12 +63,14 @@ public class Controller implements PlayList {
     Button previousMedia;
     private Music currentMusic;
     private MediaListInterface mediaList;
+    @FXML
     CategoryAxis xAxis = new CategoryAxis();
     @FXML
     NumberAxis yAxis = new NumberAxis(-50, 50, 10);
     @FXML
     BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
     private SpectrumInterface spectrum = new Spectrum();
+    private String saveFileName;
 
     public Controller() {
     }
@@ -229,7 +228,7 @@ public class Controller implements PlayList {
 
     public void loadStatistics() {
         Parent root = null;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("statistics.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/fxml/statistics.fxml"));
         try {
             root = loader.load();
         } catch (IOException e) {
@@ -244,6 +243,89 @@ public class Controller implements PlayList {
         statistics.show();
 
     }
+    public void savePlaylist() {
+        if(playListOfMusic.size()>0){
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Lejátszási listák", "*.playlist") //,"*.jpeg","*.jpg","*.bmp"
+            );
+            File userDir = new File(Paths.get("src/sample/savedplaylist").toAbsolutePath().normalize().toString());
+            System.out.println(userDir.toString());
+            if (userDir.exists()){
+                fc.setInitialDirectory(userDir);
+            }
+            File saveFile = fc.showSaveDialog(new Stage());
+            if(saveFile!=null){
+                System.out.println(saveFile.getPath().toString());
+                    if(!saveFile.exists()){
+                        try {
+                            if (saveFile.createNewFile()) {
+                                System.out.println("file created");
+                            } else {
+                                System.out.println("nem sikerült a fájlt létrehozni");
+                            }
+                        }
+                        catch (Exception ex){
+                            System.out.println(ex.toString());
+                        }
+                    }
+                    if(saveFile.exists()){
+                        System.out.println("file exists");
+                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile,false))){
+                            for(Music m : playListOfMusic){
+                                System.out.println(m.getMediaPath());
+                                bw.write("[MUSIC]"+m.getMediaPath()+"\n");
+                            }
+                            bw.newLine();
+                        }
+                        catch (Exception ex){
+
+                        }
+                    }
+                }
+
+
+            }
+
+
+        }
+
+        public void loadPlayList(){
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Lejátszási listák", "*.playlist") //,"*.jpeg","*.jpg","*.bmp"
+            );
+            File userDir = new File(Paths.get("src/sample/savedplaylist").toAbsolutePath().normalize().toString());
+            System.out.println(userDir.toString());
+            if (userDir.exists()){
+                fc.setInitialDirectory(userDir);
+            }
+            File saveFile = fc.showOpenDialog(new Stage());
+            try (BufferedReader br = new BufferedReader(new FileReader(saveFile))){
+                String line;
+                while ((line = br.readLine()) != null) {
+
+                    String path = line.replace("[MUSIC]","");
+                    playList.add(path);
+                    Music m = new Music(path, mediaPlayer);
+                    playListOfMusic.add(m);
+                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum);
+                    this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
+                    addContextMenuToMusic(m);
+                    listOfMedia.getChildren().add(m);
+
+                    }
+
+
+                }
+
+            catch (Exception ex){
+
+            }
+            mediaList.getDurations();
+
+        }
+
 
     private void bindMediaPlayer() {
         volumeAdjuster.setValue(mediaPlayer.get().getVolume() * 100);

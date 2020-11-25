@@ -99,7 +99,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="Alkalmazás">
             <items>
-              <MenuItem mnemonicParsing="false" text="Kilépés" />
+              <MenuItem fx:id="savePlayList" mnemonicParsing="false" onAction="#savePlaylist" text="Lejátszási lista mentése" />
+                  <MenuItem fx:id="loadPlaylist" mnemonicParsing="false" onAction="#loadPlayList" text="Lejátszási lista betöltése" />
+                  <MenuItem mnemonicParsing="false" text="Kilépés" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Egyéb">
