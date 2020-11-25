@@ -32,7 +32,9 @@ import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
+import sample.interfaces.SpectrumInterface;
 
 public class Controller implements PlayList {
 
@@ -63,13 +65,13 @@ public class Controller implements PlayList {
     @FXML
     Button previousMedia;
     private Music currentMusic;
-    private MediaList mediaList;
+    private MediaListInterface mediaList;
     CategoryAxis xAxis = new CategoryAxis();
     @FXML
     NumberAxis yAxis = new NumberAxis(-50, 50, 10);
     @FXML
     BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
-    private Spectrum spectrum = new Spectrum();
+    private SpectrumInterface spectrum = new Spectrum();
 
     public Controller() {
     }
@@ -183,7 +185,7 @@ public class Controller implements PlayList {
             for (File f : list) {
                 if (!playList.contains(f.toURI().toString())) {
                     playList.add(f.toURI().toString());
-                    Music music = new Music(f.toURI().toString(), mediaPlayer);
+                    Music music = new Music(f.toURI().toString(), mediaPlayer);  
                     playListOfMusic.add(music);
                     music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum);
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);

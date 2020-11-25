@@ -12,11 +12,11 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
+import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 
-public class MediaList implements PlayList {
+public class MediaList implements MediaListInterface {
     private Music currentMusic;
-
     private Slider time,volumeAdjuster;
     private ImageView playAndPause;
     private Label nowPlayed,duration,volume;
@@ -31,28 +31,35 @@ public class MediaList implements PlayList {
         this.volume = volume;
         this.mediaPlayer.set(mediaPlayer);
     }
-
+    
+ 
+    @Override
     public void setCurrentMusic(Music currentMusic) {
         this.currentMusic = currentMusic;
     }
 
+    @Override
     public Music getCurrentMusic() {
         return currentMusic;
     }
 
+    @Override
     public void nextMedia(){
         currentMusic.nextMedia();
         System.out.println(currentMusic.toString());
         //currentMusic=playListOfMusic.get(playListOfMusic.indexOf(currentMusic)+1);
     }
+    @Override
     public void prevMedia(){
         currentMusic.prevMedia();
         System.out.println(currentMusic.toString());
         //currentMusic=playListOfMusic.get(playListOfMusic.indexOf(currentMusic)-1);
     }
+    @Override
     public void startPlay(){
         playListOfMusic.get(0).playThis();
     }
+    @Override
     public void getDurations(){
 
         for(Music m : playListOfMusic){

@@ -12,13 +12,13 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
+import sample.interfaces.SpectrumInterface;
 
 /**
  *
  * @author tlehe
  */
-public class Spectrum {
+public class Spectrum implements SpectrumInterface{
     
     @FXML
     CategoryAxis xAxis;
@@ -30,6 +30,7 @@ public class Spectrum {
     private XYChart.Series<String,Number> series1 ;
     private XYChart.Series<String,Number> series2 ;
     
+    @Override
     public void startSpectrumChart(){
         series1 = new XYChart.Series<> ();
         series2 = new XYChart.Series<> ();
@@ -47,6 +48,7 @@ public class Spectrum {
         });
     }
 
+    @Override
     public void passReferences(CategoryAxis xAxis, NumberAxis yAxis, BarChart<String,Number> bc,  SimpleObjectProperty<MediaPlayer> mediaPlayer) {
         this.xAxis = xAxis;
         this.yAxis = yAxis;
@@ -56,6 +58,7 @@ public class Spectrum {
         
         
     }
+    @Override
     public void initSpectrumChart(CategoryAxis xAxis, NumberAxis yAxis, BarChart<String,Number> bc,  SimpleObjectProperty<MediaPlayer> mediaPlayer){
         bc.setLegendVisible(false);
         bc.setAnimated(false);
@@ -83,6 +86,7 @@ public class Spectrum {
         }
         return seriesData;
     }
+    @Override
     public void stopSpectrumChart(){
         bc.getData().clear();
     }

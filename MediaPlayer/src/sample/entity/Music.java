@@ -17,7 +17,9 @@ import javafx.util.Duration;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Map;
+import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
+import sample.interfaces.SpectrumInterface;
 
 public class Music extends Pane implements PlayList{
     private Media music;
@@ -35,13 +37,15 @@ public class Music extends Pane implements PlayList{
     private ImageView playAndPause;
     private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
-    private MediaList mediaList;
-    private Spectrum spectrum = new Spectrum();
+    private MediaListInterface mediaList;
+    private SpectrumInterface spectrum = new Spectrum();
 
+    
     public Media getMusic() {
         return music;
     }
 
+    
     public int getDurationOfMusic() {
         return durationOfMusic;
     }
@@ -122,7 +126,7 @@ public class Music extends Pane implements PlayList{
                 );
     }
 
-    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaList mediaList, Spectrum spectrum){
+    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaListInterface mediaList, SpectrumInterface spectrum){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
@@ -250,4 +254,6 @@ public class Music extends Pane implements PlayList{
         });
 
     }
+
+    
 }
