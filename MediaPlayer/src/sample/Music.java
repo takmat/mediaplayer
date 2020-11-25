@@ -32,6 +32,7 @@ public class Music extends Pane implements PlayList{
     private ImageView playAndPause;
     private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
+    private Spectrum spectrum;
 
     public Label getMediaTitle() {
         return mediaTitle;
@@ -88,7 +89,7 @@ public class Music extends Pane implements PlayList{
                 mediaPlayer.get().setVolume(volume);
                 nowPlayed.setText(mediaTitle.getText());
                 mediaPlayer.get().play();
-
+                spectrum.startSpectrumChart();
                 mediaPlayer.get().setOnEndOfMedia(() ->
                         nextMedia());
 
@@ -99,13 +100,14 @@ public class Music extends Pane implements PlayList{
         mediaPlayer.set(new MediaPlayer(music));
         //length.setText(music.getDuration().toString());
     }
-    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume){
+    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume, Spectrum spectrum){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
         this.playAndPause = playAndPause;
         this.duration=duration;
         this.volume=volume;
+        this.spectrum = spectrum;
         bindControlls(this);
     }
     private void loadUI(){
@@ -136,6 +138,7 @@ public class Music extends Pane implements PlayList{
             mediaPlayer.get().setVolume(volume2);
             //nowPlayed.setText(mediaTitle.getText());
             mediaPlayer.get().play();
+            spectrum.startSpectrumChart();
 
         }
 
@@ -186,4 +189,5 @@ public class Music extends Pane implements PlayList{
         });
 
     }
+    
 }

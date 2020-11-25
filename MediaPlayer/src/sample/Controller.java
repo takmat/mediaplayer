@@ -31,6 +31,11 @@ import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.paint.Color;
 
 public class Controller implements PlayList {
     @FXML
@@ -55,7 +60,13 @@ public class Controller implements PlayList {
     Label duration;
     @FXML
     Label volumeNumber;
-
+    @FXML
+    CategoryAxis xAxis = new CategoryAxis();
+    @FXML
+    NumberAxis yAxis = new NumberAxis(-50,50,10);
+    @FXML
+    BarChart<String,Number>  bc = new BarChart<>(xAxis,yAxis);
+    private Spectrum spectrum = new Spectrum();
 
 
     public Controller() {
@@ -77,16 +88,16 @@ public class Controller implements PlayList {
         MediaPlayButton.setGraphic(this.playAndPause);
         //MediaPlayButton
         MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
-
-
-
-
+        
+    
     }
 
     @FXML
     private void playAndPauseMedia() {
+        
         if(mediaPlayer.get().getStatus().equals(MediaPlayer.Status.PLAYING)){
                 mediaPlayer.get().pause();
+                spectrum.stopSpectrumChart();
         }
         else {
             mediaPlayer.get().getMedia().getMetadata().addListener((MapChangeListener<String, Object>) change -> {
@@ -99,12 +110,13 @@ public class Controller implements PlayList {
                 nowPlaying.setText(artist + " " + title);
             });
             mediaPlayer.get().play();
+            spectrum.startSpectrumChart();
             
 
 
 
         }
-
+        
     }
     @FXML
     private void getFiles(){
@@ -126,7 +138,8 @@ public class Controller implements PlayList {
                     System.out.println(f.toURI().toString());
                     Music music = new Music(f.toURI().toString(),mediaPlayer);
                     playListOfMusic.add(music);
-                    music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber);
+                    this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
+                    music.passReferences(time,volumeAdjuster,playAndPause,nowPlaying,duration,volumeNumber, spectrum);
                     addContextMenuToMusic(music);
                     listOfMedia.getChildren().add(music);
                 }
@@ -177,7 +190,7 @@ public class Controller implements PlayList {
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
         });
-
+        
         mediaPlayer.get().statusProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals(MediaPlayer.Status.READY)){
                 time.setMax(mediaPlayer.get().getMedia().getDuration().toSeconds());
@@ -200,7 +213,7 @@ public class Controller implements PlayList {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
         });
     }
-
-
-
+    
+    
+    
 }
