@@ -99,13 +99,13 @@ public class Controller implements PlayList {
         //prevButtonImage.setClip(s1);
         //previousMedia.setShape(s1);
         nextMedia.setClip(s2);
+        nextMedia.setDisable(true);
+        previousMedia.setDisable(true);
         previousMedia.setClip(s1);
-
         Circle c = new Circle(MediaPlayButton.getPrefWidth() / 2, MediaPlayButton.getPrefHeight() / 2, playAndPause.getFitWidth() / 2);
         MediaPlayButton.setClip(c);
         MediaPlayButton.setGraphic(this.playAndPause);
         //MediaPlayButton
-        
         MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
         System.out.println(previousMedia.getWidth());
 
@@ -122,7 +122,7 @@ public class Controller implements PlayList {
     }
 
     private void nextMedia() {
-        if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) < playListOfMusic.size() - 1) {
+        if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) < playListOfMusic.size() - 1 && playListOfMusic.indexOf(mediaList.getCurrentMusic()) != -1) {
             previousMedia.setDisable(false);
             mediaList.nextMedia();
             if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == playListOfMusic.size() - 1) {
@@ -187,7 +187,8 @@ public class Controller implements PlayList {
                     playList.add(f.toURI().toString());
                     Music music = new Music(f.toURI().toString(), mediaPlayer);  
                     playListOfMusic.add(music);
-                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum);
+                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia);
+                    music.setButtonsToMusicList();
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(music);
                     listOfMedia.getChildren().add(music);

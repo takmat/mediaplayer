@@ -14,9 +14,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
-import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Map;
+import javafx.scene.control.Button;
 import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 import sample.interfaces.SpectrumInterface;
@@ -31,6 +31,10 @@ public class Music extends Pane implements PlayList{
     Label performer;
     @FXML
     Label length;
+    @FXML
+    Button nextButton;
+    @FXML
+    Button previousButton;
     private int durationOfMusic=0;
     private Slider time,volumeAdjuster;
     private ImageView playAndPause;
@@ -94,7 +98,7 @@ public class Music extends Pane implements PlayList{
                     isPlayed(m,0);
                 }
                 playThis();
-
+                setButtonsToMusicList();
             }
         });
         if(mediaPlayer.isNotNull().getValue())
@@ -102,7 +106,22 @@ public class Music extends Pane implements PlayList{
         mediaPlayer.set(new MediaPlayer(music));
 
     }
-
+    public void setButtonsToMusicList(){
+        if(playListOfMusic.size() <= 1){
+            nextButton.setDisable(true);
+            previousButton.setDisable(true);
+        }else if(playListOfMusic.indexOf(mediaList.getCurrentMusic()) == 0){
+            nextButton.setDisable(false);
+            previousButton.setDisable(true);
+            
+        }else if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == playListOfMusic.size() - 1){
+            nextButton.setDisable(true);
+            previousButton.setDisable(false);
+        }else{
+            nextButton.setDisable(false);
+            previousButton.setDisable(false);
+        }
+    }
     public void playThis() {
         double volume = 0;
         if(mediaPlayer.isNotNull().getValue()){
@@ -125,7 +144,9 @@ public class Music extends Pane implements PlayList{
                 );
     }
 
-    public void passReferences(Slider time, Slider volumeAdjuster, ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaListInterface mediaList, SpectrumInterface spectrum){
+    public void passReferences(Slider time, Slider volumeAdjuster, 
+            ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaListInterface mediaList, 
+            SpectrumInterface spectrum, Button nextMedia, Button previousMedia){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
@@ -134,6 +155,8 @@ public class Music extends Pane implements PlayList{
         this.volume=volume;
         this.mediaList = mediaList;
         this.spectrum = spectrum;
+        this.nextButton = nextMedia;
+        this.previousButton = previousMedia;
         bindControlls(this);
     }
     private void loadUI(){
