@@ -25,10 +25,19 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 import sample.interfaces.SpectrumInterface;
@@ -117,7 +126,6 @@ public class Controller implements PlayList {
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
         spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
-        
     }
 
     private void nextMedia() {
@@ -184,7 +192,8 @@ public class Controller implements PlayList {
             for (File f : list) {
                 if (!playList.contains(f.toURI().toString())) {
                     playList.add(f.toURI().toString());
-                    Music music = new Music(f.toURI().toString(), mediaPlayer);  
+                    Music music = new Music(f.toURI().toString(), mediaPlayer);
+                    currentMusic = music;
                     playListOfMusic.add(music);
                     music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia);
                     music.setButtonsToMusicList();
@@ -220,6 +229,7 @@ public class Controller implements PlayList {
                     -> {
                 playList.remove(music.getMediaPath());
                 playListOfMusic.remove(music);
+                music.setButtonsToMusicList();
                 listOfMedia.getChildren().remove(music);
             });
 
@@ -310,7 +320,7 @@ public class Controller implements PlayList {
                     playList.add(path);
                     Music m = new Music(path, mediaPlayer);
                     playListOfMusic.add(m);
-                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum);
+                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia);
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(m);
                     listOfMedia.getChildren().add(m);
@@ -355,5 +365,5 @@ public class Controller implements PlayList {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
         });
     }
-
+    
 }

@@ -15,8 +15,21 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TitledPane;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 import sample.interfaces.SpectrumInterface;
@@ -89,9 +102,50 @@ public class Music extends Pane implements PlayList{
                 title.set(name.replace("%20"," "));
             }
         });
-
-
-
+        SimpleObjectProperty<Music> draggingTab = new SimpleObjectProperty<>();
+        
+        this.setOnDragOver( (DragEvent event) -> {
+            Dragboard d = event.getDragboard();
+            if(d.hasString() ){
+                event.acceptTransferModes(TransferMode.MOVE);
+                event.consume();
+            }
+        });
+        this.setOnDragDropped((DragEvent event) -> {
+            System.out.println("droped");
+            Dragboard d = event.getDragboard();
+            boolean success = false;
+            if(d.hasString()){
+                Pane parent = (Pane) this.getParent();
+                Object source = event.getGestureSource();
+                int sourceIndex = parent.getChildren().indexOf(source);
+                int targetIndex = parent.getChildren().indexOf(this);
+                System.out.println("source " + sourceIndex);
+                System.out.println("target " + targetIndex);
+                List<Node> nodes = new ArrayList<>(parent.getChildren());
+                nodes.remove((Music) source);
+                nodes.add(targetIndex, (Music)source);
+                playListOfMusic.remove((Music)source);
+                playListOfMusic.add(targetIndex, (Music)source);
+                parent.getChildren().clear();
+                parent.getChildren().addAll(nodes);
+                setButtonsToMusicList();
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+        this.setOnDragDetected((MouseEvent event ) -> {
+            System.out.println("drag");
+            Dragboard dragboard = this.startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString("Music");
+            dragboard.setContent(clipboardContent);
+            draggingTab.set(this);
+            event.consume();
+            
+        }); 
+        
         this.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
                 for(Music m : playListOfMusic){
@@ -188,16 +242,20 @@ public class Music extends Pane implements PlayList{
                 mediaPlayer.get().dispose();
             }
             Music nextMedia = playListOfMusic.get(playListOfMusic.indexOf(this)+1);
+            
             isPlayed(mediaList.getCurrentMusic(),0);
             mediaList.setCurrentMusic(nextMedia);
             mediaPlayer.set(new MediaPlayer(nextMedia.music));
+            nextMedia.setButtonsToMusicList();
             // nowPlayed.setText(nextMedia.getMediaPath().substring(nextMedia.getMediaPath().lastIndexOf("/")+1));
             nowPlayed.setText(nextMedia.getMediaTitle().getText());
             bindControlls(nextMedia);
             volumeAdjuster.setValue(volume2*100);
             mediaPlayer.get().setVolume(volume2);
             //nowPlayed.setText(mediaTitle.getText());
-            mediaPlayer.get().play();
+            
+            //mediaPlayer.get().play();
+            nextMedia.playThis();
             spectrum.startSpectrumChart();
             isPlayed(nextMedia,1);
 
@@ -223,7 +281,7 @@ public class Music extends Pane implements PlayList{
             volumeAdjuster.setValue(volume2*100);
             mediaPlayer.get().setVolume(volume2);
             //nowPlayed.setText(mediaTitle.getText());
-            mediaPlayer.get().play();
+            nextMedia.playThis();
             spectrum.startSpectrumChart();
             isPlayed(nextMedia,1);
 
