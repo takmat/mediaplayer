@@ -49,7 +49,7 @@ public class Music extends Pane implements PlayList{
     @FXML
     Button previousButton;
     private int durationOfMusic=0;
-    private Slider time,volumeAdjuster;
+    private Slider time,volumeAdjuster,playSpeed;
     private ImageView playAndPause;
     private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
@@ -200,7 +200,7 @@ public class Music extends Pane implements PlayList{
 
     public void passReferences(Slider time, Slider volumeAdjuster, 
             ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaListInterface mediaList, 
-            SpectrumInterface spectrum, Button nextMedia, Button previousMedia){
+            SpectrumInterface spectrum, Button nextMedia, Button previousMedia,Slider playSpeed){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
@@ -211,6 +211,7 @@ public class Music extends Pane implements PlayList{
         this.spectrum = spectrum;
         this.nextButton = nextMedia;
         this.previousButton = previousMedia;
+        this.playSpeed = playSpeed;
         bindControlls(this);
     }
     private void loadUI(){
@@ -294,6 +295,13 @@ public class Music extends Pane implements PlayList{
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
             volume.setText((int)volumeAdjuster.getValue()+"%");
+        });
+        System.out.println(mediaPlayer.get().getRate());
+        playSpeed.valueProperty().addListener((observable,oldValue,newValue) -> {
+
+
+            mediaPlayer.get().setRate(newValue.doubleValue());
+
         });
 
         mediaPlayer.get().statusProperty().addListener((observable, oldValue, newValue) -> {

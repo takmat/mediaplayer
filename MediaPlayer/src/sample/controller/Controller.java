@@ -59,6 +59,8 @@ public class Controller implements PlayList {
     @FXML
     Slider time;
     @FXML
+    Slider playSpeed;
+    @FXML
     Slider volumeAdjuster;
     @FXML
     Label nowPlaying;
@@ -126,6 +128,7 @@ public class Controller implements PlayList {
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
         spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
+        
     }
 
     private void nextMedia() {
@@ -195,7 +198,7 @@ public class Controller implements PlayList {
                     Music music = new Music(f.toURI().toString(), mediaPlayer);
                     currentMusic = music;
                     playListOfMusic.add(music);
-                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia);
+                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed);
                     music.setButtonsToMusicList();
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(music);
@@ -320,7 +323,7 @@ public class Controller implements PlayList {
                     playList.add(path);
                     Music m = new Music(path, mediaPlayer);
                     playListOfMusic.add(m);
-                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia);
+                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed);
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(m);
                     listOfMedia.getChildren().add(m);
@@ -365,5 +368,5 @@ public class Controller implements PlayList {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
         });
     }
-    
+
 }
