@@ -35,6 +35,7 @@ import javafx.scene.input.TransferMode;
 import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 import sample.interfaces.SpectrumInterface;
+import sample.logging.DefaultLogger;
 
 public class Music extends Pane implements PlayList{
     private Media music;
@@ -67,6 +68,7 @@ public class Music extends Pane implements PlayList{
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
     private MediaListInterface mediaList;
     private SpectrumInterface spectrum = new Spectrum();
+    private DefaultLogger logger = DefaultLogger.getInstance();
 
     
     public Media getMusic() {
@@ -134,8 +136,14 @@ public class Music extends Pane implements PlayList{
 
             }
             if(artist.get().equals("")){
-                String name = mediaPath.substring(mediaPath.lastIndexOf("/")+1,mediaPath.length());
-                title.set(name.replace("%20"," "));
+                String[] nameArray = title.get().split("-");
+                if(nameArray.length == 2){
+                    artist.set(nameArray[0]);
+                    title.set(nameArray[1].replace(".mp3", "").trim());
+                }else{
+                    String name = mediaPath.substring(mediaPath.lastIndexOf("/")+1,mediaPath.length());
+                    title.set(name.replace("%20"," "));
+                }
             }
         });
         SimpleObjectProperty<Music> draggingTab = new SimpleObjectProperty<>();
@@ -189,6 +197,7 @@ public class Music extends Pane implements PlayList{
                     isPlayed(m,0);
                 }
                 playThis();
+                
                 setButtonsToMusicList();
             }
         });
@@ -228,6 +237,7 @@ public class Music extends Pane implements PlayList{
         nowPlayed.setText(mediaTitle.getText());
         mediaPlayer.get().play();
         spectrum.startSpectrumChart();
+        logger.logInfo(this);
         mediaPlayer.get().setOnEndOfMedia(() ->{
                     isPlayed(this,0);
                     nextMedia();
@@ -378,5 +388,14 @@ public class Music extends Pane implements PlayList{
 
     }
 
+    @Override
+    public String toString() {
+        return "Music{" + "length=" + length.getText() + ", artist=" + artist.get() + ", title=" + title.get() + ", gen=" + gen.get() + ", YEAR=" + YEAR.get() + ", ALBUM=" + ALBUM.get() + '}';
+    }
+
+    
+
+
+    
     
 }
