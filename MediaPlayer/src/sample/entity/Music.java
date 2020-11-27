@@ -9,7 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -43,11 +45,21 @@ public class Music extends Pane implements PlayList{
     @FXML
     Label performer;
     @FXML
+    Label genre;
+    @FXML
+    Label year;
+    @FXML
+    Label album;
+    @FXML
     Label length;
     @FXML
     Button nextButton;
     @FXML
     Button previousButton;
+    @FXML
+    HBox genreAndYearHBox;
+    @FXML
+    VBox musicMain;
     private int durationOfMusic=0;
     private Slider time,volumeAdjuster,playSpeed;
     private ImageView playAndPause;
@@ -78,15 +90,20 @@ public class Music extends Pane implements PlayList{
         return mediaPath;
     }
 
-    private StringProperty artist=new SimpleStringProperty(""), title=new SimpleStringProperty("");
+    private StringProperty artist=new SimpleStringProperty(""), title=new SimpleStringProperty(""),
+            gen=new SimpleStringProperty(""),YEAR=new SimpleStringProperty(""),ALBUM=new SimpleStringProperty("");
 
     public Music(String mediaPath, SimpleObjectProperty<MediaPlayer> mediaPlayer) {
         loadUI();
         this.mediaPath = mediaPath;
         this.mediaPlayer = mediaPlayer;
+        musicMain.getChildren().remove(genreAndYearHBox);
         music = new Media(mediaPath);
         performer.textProperty().bind(artist);
         mediaTitle.textProperty().bind(title);
+        genre.textProperty().bind(gen);
+        year.textProperty().bind(YEAR);
+        album.textProperty().bind(ALBUM);
         mediaPlayer.set(new MediaPlayer(music));
         music.getMetadata().addListener((MapChangeListener<String,Object>) change ->{
             if (change.wasAdded()) { System.out.println(change.getKey() + " : " + change.getValueAdded()); }
@@ -96,6 +113,25 @@ public class Music extends Pane implements PlayList{
                 } else if ("title".equals(change.getKey())) {
                     title.setValue(change.getValueAdded().toString());
                 }
+                 else if ("album".equals(change.getKey())) {
+                    ALBUM.setValue(change.getValueAdded().toString());
+                }
+                else if ("genre".equals(change.getKey())) {
+                    gen.setValue(change.getValueAdded().toString());
+                    if(!gen.get().equals("")){
+                        if(!musicMain.getChildren().contains(genreAndYearHBox))
+                        musicMain.getChildren().add(genreAndYearHBox);
+
+                    }
+                }
+                else if ("year".equals(change.getKey())) {
+                    YEAR.setValue(change.getValueAdded().toString());
+                    if(!YEAR.get().equals("") ){
+                        if(!musicMain.getChildren().contains(genreAndYearHBox))
+                            musicMain.getChildren().add(genreAndYearHBox);
+                    }
+                }
+
             }
             if(artist.get().equals("")){
                 String name = mediaPath.substring(mediaPath.lastIndexOf("/")+1,mediaPath.length());
@@ -103,7 +139,8 @@ public class Music extends Pane implements PlayList{
             }
         });
         SimpleObjectProperty<Music> draggingTab = new SimpleObjectProperty<>();
-        
+
+
         this.setOnDragOver( (DragEvent event) -> {
             Dragboard d = event.getDragboard();
             if(d.hasString() ){
