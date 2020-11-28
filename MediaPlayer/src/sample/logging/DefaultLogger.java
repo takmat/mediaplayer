@@ -68,7 +68,10 @@ public class DefaultLogger {
 
     }
     public void logInfo(Music m){
-        logger.info(m.toString());
+        String logout = m.getLogOutString();
+        if(logout != null){
+            logger.info(logout);
+        }
         
     }
 

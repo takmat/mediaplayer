@@ -75,6 +75,8 @@ public class Controller implements PlayList {
     @FXML
     Button nextMedia;
     @FXML
+    Button stopMedia;
+    @FXML
     Button previousMedia;
     @FXML
     BorderPane samplePane;
@@ -87,20 +89,24 @@ public class Controller implements PlayList {
     @FXML
     BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
     private SpectrumInterface spectrum = new Spectrum();
-    private String saveFileName;
-    Stage stage;
-    
+
     public Controller() {
     }
 
     @FXML
     private void initialize() {
         System.out.println("start");
-
         MediaPlayButton.setPrefSize(71, 71);
         playAndPause = new ImageView(this.play);
         playAndPause.setFitWidth(71.0);
         playAndPause.setFitHeight(71.0);
+        stopButtonImage.setFitHeight(71.0);
+        stopButtonImage.setFitWidth(71.0);
+        Circle c = new Circle(MediaPlayButton.getPrefWidth() / 2, MediaPlayButton.getPrefHeight() / 2, playAndPause.getFitWidth() / 2);
+        stopMedia.setGraphic(stopButtonImage);
+        stopMedia.setClip(c);
+        stopMedia.disableProperty().bind(mediaPlayer.isNull());
+
 
         prevButtonImage.setFitWidth(71.0);
         prevButtonImage.setFitHeight(71.0);
@@ -119,8 +125,9 @@ public class Controller implements PlayList {
         nextMedia.setDisable(true);
         previousMedia.setDisable(true);
         previousMedia.setClip(s1);
-        Circle c = new Circle(MediaPlayButton.getPrefWidth() / 2, MediaPlayButton.getPrefHeight() / 2, playAndPause.getFitWidth() / 2);
-        MediaPlayButton.setClip(c);
+        Rectangle play = new Rectangle(71,71);
+
+        MediaPlayButton.setClip(play);
         MediaPlayButton.setGraphic(this.playAndPause);
         //MediaPlayButton
         MediaPlayButton.disableProperty().bind(mediaPlayer.isNull());
@@ -135,8 +142,10 @@ public class Controller implements PlayList {
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
         spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
-        //logWhenExit();
         
+    }
+    public void stopPlaying(){
+        mediaList.stopPlay(); 
     }
 
     private void nextMedia() {
@@ -152,7 +161,7 @@ public class Controller implements PlayList {
 
     private void prevMedia() {
         /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) > 0) {
-            nextMedia.setDisable(false);*/
+            nextMedia.setDisable(false);**/
             mediaList.prevMedia();
 
             /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == 0) {
@@ -179,6 +188,8 @@ public class Controller implements PlayList {
                 nowPlaying.setText(artist + " " + title);
             });*/
             mediaList.startPlay();
+            mediaList.setCurrentVolume(mediaPlayer.get().getVolume());
+            
         }
 
     }
@@ -193,8 +204,7 @@ public class Controller implements PlayList {
         List<File> list
                 = fc.showOpenMultipleDialog(stage);
         if(mediaPlayer.isNotNull().get()){
-            mediaPlayer.get().stop();
-            spectrum.stopSpectrumChart();
+            mediaList.stopPlay();
         }
         if (list != null) {
             for (File f : list) {
@@ -378,5 +388,7 @@ public class Controller implements PlayList {
     public MediaListInterface getMediaList(){
         return mediaList;
     }
+
+    
 
 }

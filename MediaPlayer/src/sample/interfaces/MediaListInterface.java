@@ -19,4 +19,8 @@ public interface MediaListInterface extends PlayList{
     public void startPlay();
     public void getDurations();
     public void pausePlay();
+    public void setCurrentVolume(double currentVolume);
+    public void stopPlay();
+    double getCurrentVolume();
+
 }

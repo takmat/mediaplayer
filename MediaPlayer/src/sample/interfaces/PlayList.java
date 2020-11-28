@@ -17,7 +17,9 @@ public interface PlayList{
     Image pause = new Image("sample/pictures/pause.png");
     Image prev = new Image("sample/pictures/prev.png");
     Image next = new Image("sample/pictures/next.png");
+    Image stop = new Image("sample/pictures/stop.png");
     ImageView prevButtonImage = new ImageView(prev);
     ImageView nextButtonImage = new ImageView(next);
+    ImageView stopButtonImage = new ImageView(stop);
     DecimalFormat formatter = new DecimalFormat("00");
 }

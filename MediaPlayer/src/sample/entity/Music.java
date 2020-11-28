@@ -236,6 +236,9 @@ public class Music extends Pane implements PlayList{
                 volume=mediaPlayer.get().getVolume();
                 mediaPlayer.get().dispose();
             }
+            if(volume==0)
+                volume=mediaList.getCurrentVolume();
+
             mediaList.setCurrentMusic(this);
             isPlayed(this,1);
             mediaPlayer.set(new MediaPlayer(music));
@@ -243,7 +246,7 @@ public class Music extends Pane implements PlayList{
             volumeAdjuster.setValue(volume*100);
             mediaPlayer.get().setVolume(volume);
             nowPlayed.setText(mediaTitle.getText());
-            
+            mediaList.setCurrentVolume(mediaPlayer.get().getVolume());
         }
         mediaPlayer.get().setOnEndOfMedia(() ->{
                 isPlayed(this,0);
@@ -291,7 +294,9 @@ public class Music extends Pane implements PlayList{
     }
     public void nextMedia(){
         double volume2 = 0;
-        logger.logInfo(this);
+        if(mediaPlayer.isNotNull().getValue()){
+            logger.logInfo(this);
+        }
         if((playListOfMusic.indexOf(this)+1)<playListOfMusic.size()){
             if(mediaPlayer.isNotNull().getValue()){
                 volume2=mediaPlayer.get().getVolume();
@@ -312,8 +317,8 @@ public class Music extends Pane implements PlayList{
             
             //mediaPlayer.get().play();
             nextMedia.playThis();
-            spectrum.startSpectrumChart();
-            isPlayed(nextMedia,1);
+            //spectrum.startSpectrumChart();
+            //isPlayed(nextMedia,1);
 
         }else{
             mediaList.setCurrentMusic(null);
@@ -323,7 +328,9 @@ public class Music extends Pane implements PlayList{
 
     public void prevMedia(){
         double volume2 = 0;
-        logger.logInfo(this);
+        if(mediaPlayer.isNotNull().getValue()){
+            logger.logInfo(this);
+        }
         if((playListOfMusic.indexOf(this)-1)>=0){
             if(mediaPlayer.isNotNull().getValue()){
                 volume2=mediaPlayer.get().getVolume();
@@ -339,9 +346,10 @@ public class Music extends Pane implements PlayList{
             volumeAdjuster.setValue(volume2*100);
             mediaPlayer.get().setVolume(volume2);
             //nowPlayed.setText(mediaTitle.getText());
+            nextMedia.setButtonsToMusicList();
             nextMedia.playThis();
-            spectrum.startSpectrumChart();
-            isPlayed(nextMedia,1);
+            //spectrum.startSpectrumChart();
+            //isPlayed(nextMedia,1);
 
         }else{
             mediaList.setCurrentMusic(null);
@@ -354,6 +362,7 @@ public class Music extends Pane implements PlayList{
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
             volume.setText((int)volumeAdjuster.getValue()+"%");
+            mediaList.setCurrentVolume(volumeAdjuster.getValue());
         });
         System.out.println(mediaPlayer.get().getRate());
         playSpeed.valueProperty().addListener((observable,oldValue,newValue) -> {
@@ -375,12 +384,13 @@ public class Music extends Pane implements PlayList{
             if(newValue.equals(MediaPlayer.Status.PLAYING)){
                 playAndPause.setImage(pause);
             }
-            else if(newValue.equals(MediaPlayer.Status.PAUSED)){
+            else if(newValue.equals(MediaPlayer.Status.PAUSED) || newValue.equals(MediaPlayer.Status.STOPPED)){
                 playAndPause.setImage(play);
             }
         });
 
         mediaPlayer.get().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            
             m.time.setValue(newValue.toSeconds());
             //int min = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()/60);
             //int sec = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()%60);
@@ -390,6 +400,7 @@ public class Music extends Pane implements PlayList{
             //length.setText(min+":"+sec);
             m.durationProperty.set(formatter.format(currentmin)+":"+formatter.format(currentsec) +" / "+m.length.getText());
             duration.textProperty().bind(m.durationProperty);
+            
         });
         time.setOnMousePressed(event -> {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
@@ -400,14 +411,21 @@ public class Music extends Pane implements PlayList{
 
     }
 
-    @Override
-    public String toString() {
-        SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-        return "playedTill=" + df.format(mediaPlayer.get().getCurrentTime().toMillis()) + " | artist=" + artist.get() + " | title=" + title.get() + " | gen=" + gen.get() + " | year=" + YEAR.get() + " | album=" + ALBUM.get() + " | lenght=" + length.getText() ;
+    public String getLogOutString() {
+        if(mediaPlayer.get().getCurrentTime().toMillis() > 0){
+            SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+            return "playedTill=" + df.format(mediaPlayer.get().getCurrentTime().toMillis()) + " | artist=" + artist.get() + " | title=" + title.get() + " | gen=" + gen.get() + " | year=" + YEAR.get() + " | album=" + ALBUM.get() + " | lenght=" + length.getText() ;
+        }
+        return null;
     }
 
-    void pauseThis() {
+    public void pauseThis() {
         mediaPlayer.get().pause();
+        spectrum.stopSpectrumChart();
+    }
+
+    public void stopThis() {
+        mediaPlayer.get().stop();
         spectrum.stopSpectrumChart();
     }
 

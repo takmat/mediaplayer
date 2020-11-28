@@ -22,8 +22,10 @@ public class Main extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                DefaultLogger logger = DefaultLogger.getInstance();
-                logger.logInfo(controller.getMediaList().getCurrentMusic());
+                if(controller.getMediaList().getCurrentMusic() != null){
+                    DefaultLogger logger = DefaultLogger.getInstance();
+                    logger.logInfo(controller.getMediaList().getCurrentMusic());
+                }
             }
         });
         primaryStage.show();

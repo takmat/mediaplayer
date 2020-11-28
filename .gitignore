@@ -48,3 +48,5 @@ Thumbs.db
 *.mov
 *.wmv
 
+/mediaPlayer-master-test/nbproject/private/
+/mediaPlayer-master-test/build/
