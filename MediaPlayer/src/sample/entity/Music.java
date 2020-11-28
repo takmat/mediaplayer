@@ -194,7 +194,7 @@ public class Music extends Pane implements PlayList{
         
         this.setOnMouseClicked(event -> {
             if(event.getClickCount()==2){
-                if(mediaList.getCurrentMusic() != null){ 
+                if(mediaList.getCurrentMusic() != null){
                     System.out.println(mediaList.getCurrentMusic().toString());
                     //logger.logInfo(mediaList.getCurrentMusic());
                 }
@@ -253,7 +253,7 @@ public class Music extends Pane implements PlayList{
                 nextMedia();
             });
         spectrum.startSpectrumChart();
-        mediaPlayer.get().play(); 
+        mediaPlayer.get().play();
     }
 
     public void passReferences(Slider time, Slider volumeAdjuster, 
@@ -322,7 +322,7 @@ public class Music extends Pane implements PlayList{
 
         }else{
             mediaList.setCurrentMusic(null);
-        }        
+        }
 
     }
 
@@ -353,7 +353,7 @@ public class Music extends Pane implements PlayList{
 
         }else{
             mediaList.setCurrentMusic(null);
-        }    
+        }
 
     }
 
@@ -390,7 +390,6 @@ public class Music extends Pane implements PlayList{
         });
 
         mediaPlayer.get().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            
             m.time.setValue(newValue.toSeconds());
             //int min = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()/60);
             //int sec = (int) (mediaPlayer.get().getMedia().getDuration().toSeconds()%60);
@@ -400,7 +399,6 @@ public class Music extends Pane implements PlayList{
             //length.setText(min+":"+sec);
             m.durationProperty.set(formatter.format(currentmin)+":"+formatter.format(currentsec) +" / "+m.length.getText());
             duration.textProperty().bind(m.durationProperty);
-            
         });
         time.setOnMousePressed(event -> {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
@@ -414,7 +412,7 @@ public class Music extends Pane implements PlayList{
     public String getLogOutString() {
         if(mediaPlayer.get().getCurrentTime().toMillis() > 0){
             SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-            return "playedTill=" + df.format(mediaPlayer.get().getCurrentTime().toMillis()) + " | artist=" + artist.get() + " | title=" + title.get() + " | gen=" + gen.get() + " | year=" + YEAR.get() + " | album=" + ALBUM.get() + " | lenght=" + length.getText() ;
+            return "playedTill=" + df.format(mediaPlayer.get().getCurrentTime().toMillis()) + " | artist=" + artist.get() + " | title=" + title.get() + " | gen=" + gen.get() + " | year=" + YEAR.get() + " | album=" + ALBUM.get() + " | length=" + length.getText() ;
         }
         return null;
     }
@@ -429,5 +427,6 @@ public class Music extends Pane implements PlayList{
         spectrum.stopSpectrumChart();
     }
 
+    
     
 }
