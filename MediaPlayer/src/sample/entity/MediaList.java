@@ -57,7 +57,7 @@ public class MediaList implements MediaListInterface {
     }
     @Override
     public void startPlay(){
-        playListOfMusic.get(0).playThis();
+        currentMusic.playThis();
     }
     @Override
     public void getDurations(){
@@ -121,4 +121,9 @@ public class MediaList implements MediaListInterface {
         });
 
     }
+    @Override
+    public void pausePlay(){
+        currentMusic.pauseThis();
+    }
+    
 }

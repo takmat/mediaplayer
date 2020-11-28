@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -38,9 +39,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.WindowEvent;
 import sample.interfaces.MediaListInterface;
 import sample.interfaces.PlayList;
 import sample.interfaces.SpectrumInterface;
+import sample.logging.DefaultLogger;
 
 public class Controller implements PlayList {
 
@@ -72,6 +76,8 @@ public class Controller implements PlayList {
     Button nextMedia;
     @FXML
     Button previousMedia;
+    @FXML
+    BorderPane samplePane;
     private Music currentMusic;
     private MediaListInterface mediaList;
     @FXML
@@ -82,7 +88,8 @@ public class Controller implements PlayList {
     BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
     private SpectrumInterface spectrum = new Spectrum();
     private String saveFileName;
-
+    Stage stage;
+    
     public Controller() {
     }
 
@@ -128,37 +135,37 @@ public class Controller implements PlayList {
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
         spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
+        //logWhenExit();
         
     }
 
     private void nextMedia() {
-        if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) < playListOfMusic.size() - 1 && playListOfMusic.indexOf(mediaList.getCurrentMusic()) != -1) {
-            previousMedia.setDisable(false);
+        /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) < playListOfMusic.size() - 1 && playListOfMusic.indexOf(mediaList.getCurrentMusic()) != -1) {
+            previousMedia.setDisable(false);*/
             mediaList.nextMedia();
-            if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == playListOfMusic.size() - 1) {
+            /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == playListOfMusic.size() - 1) {
                 nextMedia.setDisable(true);
             }
-        }
+        }*/
 
     }
 
     private void prevMedia() {
-        if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) > 0) {
-            nextMedia.setDisable(false);
+        /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) > 0) {
+            nextMedia.setDisable(false);*/
             mediaList.prevMedia();
 
-            if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == 0) {
+            /*if (playListOfMusic.indexOf(mediaList.getCurrentMusic()) == 0) {
                 previousMedia.setDisable(true);
             }
-        }
+        }*/
 
     }
 
     @FXML
     private void playAndPauseMedia() {
         if (mediaPlayer.get().getStatus().equals(MediaPlayer.Status.PLAYING)) {
-            mediaPlayer.get().pause();
-            spectrum.stopSpectrumChart();
+            mediaList.pausePlay();
         } else {
 
 
@@ -171,9 +178,7 @@ public class Controller implements PlayList {
                 }
                 nowPlaying.setText(artist + " " + title);
             });*/
-            mediaPlayer.get().play();
-            spectrum.startSpectrumChart();
-
+            mediaList.startPlay();
         }
 
     }
@@ -214,6 +219,7 @@ public class Controller implements PlayList {
         if(mediaPlayer.isNotNull().get()){
             mediaPlayer.get().setVolume(0.5);
         }
+        
 
     }
 
@@ -367,6 +373,10 @@ public class Controller implements PlayList {
         time.setOnMouseDragged(event -> {
             mediaPlayer.get().seek(Duration.seconds(time.getValue()));
         });
+    }
+    
+    public MediaListInterface getMediaList(){
+        return mediaList;
     }
 
 }
