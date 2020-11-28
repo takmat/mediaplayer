@@ -1,19 +1,16 @@
 package sample.entity;
 
 
-import sample.entity.Music;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.text.DecimalFormat;
 import sample.interfaces.MediaListInterface;
-import sample.interfaces.PlayList;
 
 public class MediaList implements MediaListInterface {
     private Music currentMusic;
@@ -22,6 +19,15 @@ public class MediaList implements MediaListInterface {
     private Label nowPlayed,duration,volume;
     private SimpleStringProperty durationProperty = new SimpleStringProperty("");
     SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
+    private double currentVolume=0;
+
+    public double getCurrentVolume() {
+        return currentVolume;
+    }
+
+    public void setCurrentVolume(double currentVolume) {
+        this.currentVolume = currentVolume;
+    }
 
     public MediaList(Slider time, Slider volumeAdjuster, Label nowPlayed, Label duration, Label volume, MediaPlayer mediaPlayer) {
         this.time = time;

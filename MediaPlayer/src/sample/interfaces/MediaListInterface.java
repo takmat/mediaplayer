@@ -18,4 +18,6 @@ public interface MediaListInterface extends PlayList{
     public void prevMedia();
     public void startPlay();
     public void getDurations();
+    void setCurrentVolume(double currentVolume);
+    double getCurrentVolume();
 }

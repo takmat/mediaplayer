@@ -197,7 +197,6 @@ public class Music extends Pane implements PlayList{
                     isPlayed(m,0);
                 }
                 playThis();
-                
                 setButtonsToMusicList();
             }
         });
@@ -224,10 +223,14 @@ public class Music extends Pane implements PlayList{
     }
     public void playThis() {
         double volume = 0;
+        //System.out.println("volume= "+volume+" "+mediaList.getCurrentVolume()+" "+mediaPlayer.get().getVolume());
         if(mediaPlayer.isNotNull().getValue()){
             volume=mediaPlayer.get().getVolume();
             mediaPlayer.get().dispose();
         }
+        if(volume==0)
+            volume=mediaList.getCurrentVolume();
+
         mediaList.setCurrentMusic(this);
         isPlayed(this,1);
         mediaPlayer.set(new MediaPlayer(music));
@@ -238,6 +241,8 @@ public class Music extends Pane implements PlayList{
         mediaPlayer.get().play();
         spectrum.startSpectrumChart();
         logger.logInfo(this);
+        mediaList.setCurrentVolume(mediaPlayer.get().getVolume());
+        //System.out.println("volume= "+volume+" "+mediaList.getCurrentVolume());
         mediaPlayer.get().setOnEndOfMedia(() ->{
                     isPlayed(this,0);
                     nextMedia();
@@ -342,6 +347,7 @@ public class Music extends Pane implements PlayList{
         volumeAdjuster.valueProperty().addListener(observable -> {
             mediaPlayer.get().setVolume(volumeAdjuster.getValue()/100);
             volume.setText((int)volumeAdjuster.getValue()+"%");
+            mediaList.setCurrentVolume(volumeAdjuster.getValue());
         });
         System.out.println(mediaPlayer.get().getRate());
         playSpeed.valueProperty().addListener((observable,oldValue,newValue) -> {
