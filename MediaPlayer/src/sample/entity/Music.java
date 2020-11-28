@@ -318,7 +318,7 @@ public class Music extends Pane implements PlayList{
             //mediaPlayer.get().play();
             nextMedia.playThis();
             //spectrum.startSpectrumChart();
-            //isPlayed(nextMedia,1);
+            isPlayed(nextMedia,1);
 
         }else{
             mediaList.setCurrentMusic(null);
@@ -349,7 +349,7 @@ public class Music extends Pane implements PlayList{
             nextMedia.setButtonsToMusicList();
             nextMedia.playThis();
             //spectrum.startSpectrumChart();
-            //isPlayed(nextMedia,1);
+            isPlayed(nextMedia,1);
 
         }else{
             mediaList.setCurrentMusic(null);
