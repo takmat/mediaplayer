@@ -2,8 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.StackedBarChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.entity.Statistics">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.entity.Statistics">
    <children>
       <HBox layoutX="14.0" layoutY="14.0" prefHeight="520.0" prefWidth="770.0">
          <children>
@@ -50,8 +50,8 @@
                   <Label text="Lejátszott zenék statisztikája:" />
                   <GridPane hgap="10.0" vgap="10.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="199.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.0" minWidth="10.0" prefWidth="70.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -62,7 +62,7 @@
                         <Label text="Eddig lejátszott idő:" />
                         <Label text="Eddig lejátszott számok:" GridPane.rowIndex="1" />
                         <Label fx:id="sumDuration" text="sumdur" GridPane.columnIndex="1" />
-                        <Label fx:id="sumMusics" text="summusic" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="sumMusics" prefHeight="21.0" prefWidth="74.0" text="summusic" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Végighallgatott zenék:" GridPane.rowIndex="2" />
                         <Label fx:id="tillTheVeryEnd" text="vegig" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
@@ -77,14 +77,14 @@
             </VBox>
             <VBox prefHeight="520.0" prefWidth="464.0">
                <children>
-                  <LineChart prefHeight="400.0" prefWidth="406.0">
+                  <StackedBarChart fx:id="statisticsChart" title="Lejátszott napi zenék száma">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <CategoryAxis animated="false" label="napok" side="BOTTOM" tickLabelGap="1" tickLabelRotation="90.0" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis animated="false" minorTickCount="0" minorTickLength="0" tickLabelGap="1" tickLength="1" tickUnit="1" />
                     </yAxis>
-                  </LineChart>
+                  </StackedBarChart>
                </children></VBox>
          </children>
       </HBox>

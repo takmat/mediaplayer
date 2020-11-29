@@ -135,7 +135,9 @@ public class MediaList implements MediaListInterface {
     public void stopPlay(){
         //mediaPlayer.get().dispose();
         //mediaPlayer.set(null);
-        currentMusic.stopThis();
+        if(currentMusic != null){
+            currentMusic.stopThis();
+        }
     }
     
 }
