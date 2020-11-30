@@ -3,6 +3,7 @@ package sample.entity;
 import com.sun.javafx.charts.Legend;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.util.Pair;
 import sample.interfaces.PlayList;
 
 import java.io.BufferedReader;
@@ -11,18 +12,31 @@ import java.io.FileReader;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Tooltip;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 
 public class Statistics implements PlayList {
@@ -44,6 +58,14 @@ public class Statistics implements PlayList {
     NumberAxis yAxis;// = new NumberAxis();
     @FXML
     StackedBarChart<String, Number> statisticsChart;// = new StackedBarChart<>(xAxis, yAxis);
+    @FXML 
+    PieChart favoritePieChart;
+    @FXML
+    Label titleLabel, artistLabel;
+    @FXML
+    DatePicker datePicker;
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                
     
     public void initialize() {
         int sum=0;
@@ -65,13 +87,23 @@ public class Statistics implements PlayList {
             playlistAVGDuration.setText(avg);
 
         }
+        LocalDate now = LocalDate.now();
+        datePicker.setValue(now);
+        datePicker.valueProperty().addListener(new ChangeListener<LocalDate>(){
+            @Override
+            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                loadStatistics(newValue);
+            }
+            
+        });
         
-        loadStatistics();
+        loadStatistics(now);
         
 
     }
-    private void loadStatistics(){
+    private void loadStatistics(LocalDate now){
         File f = new File("./logfile.log");
+        System.out.println(f.exists());
         if(f.exists()){
             try (BufferedReader br = new BufferedReader(new FileReader(f))){
                 String line;
@@ -87,15 +119,18 @@ public class Statistics implements PlayList {
                 Pattern artistPattern = Pattern.compile("(artist=.+?[?=\\|])");
                 Pattern titlePattern = Pattern.compile("(title=.+?[?=\\|])");
                 
-                Map<String, Integer> dateMap;
-                Map<LogMusic, Integer> musicMap = new HashMap<>();
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                LocalDate now = LocalDate.now();
-                dateMap = Arrays.asList(DayOfWeek.values()).stream().map(now::with).map( d -> d.format(dtf)).collect(Collectors.toMap(str -> str, i -> 0));
+                Map<LocalDate, Integer> dateMap;
+                ArrayList<LogMusic> musicList = new ArrayList<>();
+                
+                dateMap = Arrays.asList(DayOfWeek.values()).stream().map(now::with).collect(Collectors.toMap( d->d, i -> 0));
+                //dateMap.keySet().forEach( k-> System.out.println(k));
+                int maxListened=1;
+
                 while ((line = br.readLine()) != null){
+                    //System.out.println(line);
                     Matcher m = playedTill.matcher(line);
                     if(m.find()){
-
+                        //System.out.println("lejátszás");
                         String[] temp1 = m.group(1).split("=");
                         String[] temp2 = temp1[1].split(":");
                         min = Integer.parseInt(temp2[0])*60;
@@ -103,53 +138,72 @@ public class Statistics implements PlayList {
                         sum=sum+sec;
                         musics++;
                     }
-                    
-                    Matcher m3 = datePattern.matcher(line);
                     Matcher artistMatcher = artistPattern.matcher(line);
                     Matcher titleMathcer = titlePattern.matcher(line);
-                    String date = null;
-                    if(m3.find()){
-                        date = m3.group();
-                    }
+
                     Matcher m2 = length.matcher(line);
                     if(m2.find()){
-
+                        //System.out.println("végig");
                         String[] temp1 = m2.group(1).split("=");
                         String[] temp2 = temp1[1].split(":");
                         min = Integer.parseInt(temp2[0])*60;
                         lengthOfMusic = min+Integer.parseInt(temp2[1]);
                         if(lengthOfMusic-sec==0){
                             sumOfListenedMusic++;
-                            if(date != null){
-                                Integer i = dateMap.get(date)+1;
-                                dateMap.replace(date, i);
-                            }
-                            if(artistMatcher.find() && titleMathcer.find()){
-                                LogMusic music = new LogMusic(artistMatcher.group(),titleMathcer.group());
-                                if(musicMap.containsKey(music)){
-                                   
-                                    musicMap.replace(music, musicMap.get(music)+1);
-                                }else{
-                                    musicMap.put(music, 0);
+                            Matcher m3 = datePattern.matcher(line);
+                            LocalDate date;
+                            
+                            
+                            if(m3.find()){
+                                //System.out.println("dátum");
+                                date = LocalDate.parse(m3.group(),dtf);
+                                if(date != null && dateMap.containsKey(date)){
+                                    if(dateMap.containsKey(date)){
+                                        int i = dateMap.get(date)+1;
+                                        
+                                        if(i>maxListened){
+                                            maxListened=i;
+                                        }
+                                        dateMap.replace(date, i);
+                                    }
+                                    if(artistMatcher.find() && titleMathcer.find()){
+                                        LogMusic music = new LogMusic(artistMatcher.group().replace("|", "").replace("artist=", "").trim(),
+                                                titleMathcer.group().replace("title=", "").replace("|","").trim());
+                                        musicList.add(music);
+                                    }else{
+                                        dateMap.put(date,1);
+                                    }
                                     
                                 }
                             }
                         }
+                    
                     }
+                    int minListened=0;
+
+                    
                     
                 }
+                //musicList.forEach( t -> System.out.println(t.getArtist() + " " + t.getTitle()));
                 int hour = sum/3600;
                 min = sum/60-(hour*60);
                 sec = sum%60;
-                System.out.println(sum);
-                System.out.println("min: "+min);
                 String duration=formatter.format(hour)+":"+formatter.format(min)+":"+formatter.format(sec);
-                System.out.println("összes hallgatott idő "+duration);
-                loadDataIntoChart(dateMap);
-                loadMostListened(musicMap);
+                //musicMap.keySet().stream().forEach(k-> System.out.println(k + " " + musicMap.get(k)));
+                Map<String, Long> counterMap =  musicList.stream()
+                        .filter( k -> !"".equals(k.getArtist()))
+                        .map(k -> k.getArtist())
+                        .collect(Collectors.groupingBy( e -> e, Collectors.counting()));
+                loadPieChart(counterMap);
+                //System.out.println("összes hallgatott idő "+duration);
+                favoriteArtist(counterMap, musicList);
                 tillTheVeryEnd.setText(String.valueOf(sumOfListenedMusic));
                 sumDuration.setText(duration);
                 sumMusics.setText(String.valueOf(musics));
+
+                loadDataIntoChart(dateMap,maxListened);
+                
+
             }
             catch (Exception ex){
 
@@ -157,36 +211,51 @@ public class Statistics implements PlayList {
         }
     }
     
-    private void loadDataIntoChart(Map<String,Integer> dateMap){
-        for(String dateString : dateMap.keySet().stream().sorted().collect(toList())){
+    private void loadDataIntoChart(Map<LocalDate,Integer> dateMap,int maxListened){
+        statisticsChart.getData().clear();
+        for(LocalDate dateString : dateMap.keySet().stream().sorted().collect(toList())){
             XYChart.Series<String, Number> series1 = new XYChart.Series<>();
-            series1.getData().add(new XYChart.Data<>(dateString, dateMap.get(dateString)));
+            series1.getData().add(new XYChart.Data<>(dateString.format(dtf), dateMap.get(dateString)));
             statisticsChart.getData().add(series1);
         }
         Legend legend = (Legend) statisticsChart.lookup(".chart-legend");
         legend.getItems().clear();
-        /*yAxis.setAutoRanging(false);
-        yAxis.setLowerBound(20);
-        yAxis.setUpperBound(56);
+           
+        yAxis.setAutoRanging(false);
+        yAxis.setLowerBound(0);
+        yAxis.setUpperBound(maxListened);
         yAxis.setTickUnit(1);
         yAxis.setMinorTickLength(0);
         yAxis.setMinorTickCount(0);
-        yAxis.setMinorTickVisible(false);*/
         
     }
-    private void loadMostListened(Map<LogMusic, Integer> musicMap){
-        for(LogMusic m : musicMap.keySet()){
-            System.out.println(m + " " + musicMap.get(m));
-        }
+    private void loadPieChart(Map<String, Long> counterMap){
+        List<PieChart.Data> pieChartData = counterMap.keySet().stream()
+                .sorted((k1,k2) -> counterMap.get(k2).compareTo(counterMap.get(k1)))
+                .limit(3)
+                .map( k-> new PieChart.Data(k + " " + counterMap.get(k) + " db", counterMap.get(k))).collect(toList());
+        favoritePieChart.setData(FXCollections.observableArrayList(pieChartData));
+        Legend legend = (Legend) favoritePieChart.lookup(".chart-legend");
+        legend.getItems().clear();
+        favoritePieChart.labelsVisibleProperty().setValue(true);
+    }
+    private void favoriteArtist(Map<String, Long> counterMap, ArrayList<LogMusic> musicList){
+        String fav = counterMap.keySet().stream().sorted((k1,k2) -> counterMap.get(k2).compareTo(counterMap.get(k1))).limit(1).collect(Collectors.joining());
+        artistLabel.setText(fav); 
+        Map<String,Long> favMusicMap = musicList.stream().filter(k ->k.getArtist().equals(fav)).map( k-> k.getTitle()).collect(Collectors.groupingBy( e->e, Collectors.counting()));
+        String music = favMusicMap.keySet().stream().sorted( (k1,k2) -> favMusicMap.get(k2).compareTo(favMusicMap.get(k1))).limit(1).collect(Collectors.joining());
+        titleLabel.setText( music);
+                
     }
     
     private class LogMusic{
         private String artist;
         private String title;
-
+        
         public LogMusic(String artist, String title) {
             this.artist = artist;
             this.title = title;
+           
         }
 
         public String getArtist() {
@@ -204,6 +273,39 @@ public class Statistics implements PlayList {
         public void setTitle(String title) {
             this.title = title;
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final LogMusic other = (LogMusic) obj;
+            if (!Objects.equals(this.artist, other.artist)) {
+                return false;
+            }
+            if (!Objects.equals(this.title, other.title)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "LogMusic{" + "artist=" + artist + ", title=" + title + '}';
+        }
+        
         
         
     }

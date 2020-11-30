@@ -3,7 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -73,19 +75,51 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                   </GridPane>
+                  <PieChart fx:id="favoritePieChart" animated="true" prefHeight="252.0" prefWidth="299.0" title="Leghallgatottab 3 előadó" />
                </children>
             </VBox>
             <VBox prefHeight="520.0" prefWidth="464.0">
                <children>
+                  <HBox alignment="CENTER" prefHeight="49.0" prefWidth="452.0">
+                     <children>
+                        <Label alignment="CENTER" text="Kiválasztott hét:" />
+                        <DatePicker fx:id="datePicker" prefHeight="31.0" prefWidth="146.0" />
+                     </children>
+                  </HBox>
                   <StackedBarChart fx:id="statisticsChart" title="Lejátszott napi zenék száma">
                     <xAxis>
-                      <CategoryAxis animated="false" label="napok" side="BOTTOM" tickLabelGap="1" tickLabelRotation="90.0" />
+                      <CategoryAxis animated="false" label="napok" side="BOTTOM" tickLabelGap="1" tickLabelRotation="90.0" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis animated="false" minorTickCount="0" minorTickLength="0" tickLabelGap="1" tickLength="1" tickUnit="1" />
+                      <NumberAxis fx:id="yAxis" animated="false" label="Lejátszott zenék száma" minorTickCount="0" minorTickLength="0" tickLabelGap="1" tickLength="1" tickUnit="1" />
                     </yAxis>
                   </StackedBarChart>
-               </children></VBox>
+                  <HBox prefHeight="120.0" prefWidth="452.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="120.0" prefWidth="497.0">
+                           <children>
+                              <GridPane prefHeight="81.0" prefWidth="543.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="339.0" minWidth="10.0" prefWidth="110.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="104.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label alignment="CENTER" prefHeight="21.0" prefWidth="258.0" text="Leghallgatottabb előadó:" />
+                                    <Label alignment="CENTER" prefHeight="21.0" prefWidth="304.0" text="Leghallgatottabb zene tőle:" GridPane.rowIndex="1" />
+                                    <Label fx:id="artistLabel" alignment="CENTER" prefHeight="21.0" prefWidth="363.0" text="artistLabel" GridPane.columnIndex="1" />
+                                    <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="265.0" text="titleLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
       </HBox>
    </children>

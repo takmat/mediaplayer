@@ -54,7 +54,7 @@ public class DefaultLogger {
                     DateFormat simple = new SimpleDateFormat("dd-MM-yyyy"); 
                     Date date = new Date(record.getMillis());
                     StringBuilder sb = new StringBuilder();
-                    sb.append(simple.format(date)).append(" : ");
+                    sb.append("date="+simple.format(date)).append(" : ");
                     sb.append(record.getMessage()).append('\n');
                     return sb.toString();
                 }
