@@ -12,6 +12,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -82,8 +83,12 @@ public class Statistics implements PlayList {
                 int musics=0;
                 Pattern playedTill = Pattern.compile("(playedTill=\\d\\d:\\d\\d)");
                 Pattern length = Pattern.compile("(length=\\d\\d:\\d\\d)");
-                Pattern datePattern = Pattern.compile("\\d\\d-\\d\\d-\\d\\d\\d\\d");
+                Pattern datePattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4}");
+                Pattern artistPattern = Pattern.compile("(artist=.+?[?=\\|])");
+                Pattern titlePattern = Pattern.compile("(title=.+?[?=\\|])");
+                
                 Map<String, Integer> dateMap;
+                Map<LogMusic, Integer> musicMap = new HashMap<>();
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 LocalDate now = LocalDate.now();
                 dateMap = Arrays.asList(DayOfWeek.values()).stream().map(now::with).map( d -> d.format(dtf)).collect(Collectors.toMap(str -> str, i -> 0));
@@ -100,6 +105,8 @@ public class Statistics implements PlayList {
                     }
                     
                     Matcher m3 = datePattern.matcher(line);
+                    Matcher artistMatcher = artistPattern.matcher(line);
+                    Matcher titleMathcer = titlePattern.matcher(line);
                     String date = null;
                     if(m3.find()){
                         date = m3.group();
@@ -117,6 +124,16 @@ public class Statistics implements PlayList {
                                 Integer i = dateMap.get(date)+1;
                                 dateMap.replace(date, i);
                             }
+                            if(artistMatcher.find() && titleMathcer.find()){
+                                LogMusic music = new LogMusic(artistMatcher.group(),titleMathcer.group());
+                                if(musicMap.containsKey(music)){
+                                   
+                                    musicMap.replace(music, musicMap.get(music)+1);
+                                }else{
+                                    musicMap.put(music, 0);
+                                    
+                                }
+                            }
                         }
                     }
                     
@@ -129,6 +146,7 @@ public class Statistics implements PlayList {
                 String duration=formatter.format(hour)+":"+formatter.format(min)+":"+formatter.format(sec);
                 System.out.println("összes hallgatott idő "+duration);
                 loadDataIntoChart(dateMap);
+                loadMostListened(musicMap);
                 tillTheVeryEnd.setText(String.valueOf(sumOfListenedMusic));
                 sumDuration.setText(duration);
                 sumMusics.setText(String.valueOf(musics));
@@ -147,14 +165,46 @@ public class Statistics implements PlayList {
         }
         Legend legend = (Legend) statisticsChart.lookup(".chart-legend");
         legend.getItems().clear();
-        yAxis.setAutoRanging(false);
+        /*yAxis.setAutoRanging(false);
         yAxis.setLowerBound(20);
         yAxis.setUpperBound(56);
         yAxis.setTickUnit(1);
         yAxis.setMinorTickLength(0);
         yAxis.setMinorTickCount(0);
-        yAxis.setMinorTickVisible(false);
+        yAxis.setMinorTickVisible(false);*/
         
     }
+    private void loadMostListened(Map<LogMusic, Integer> musicMap){
+        for(LogMusic m : musicMap.keySet()){
+            System.out.println(m + " " + musicMap.get(m));
+        }
+    }
     
+    private class LogMusic{
+        private String artist;
+        private String title;
+
+        public LogMusic(String artist, String title) {
+            this.artist = artist;
+            this.title = title;
+        }
+
+        public String getArtist() {
+            return artist;
+        }
+
+        public void setArtist(String artist) {
+            this.artist = artist;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+        
+        
+    }
 }
