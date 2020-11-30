@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.entity.Statistics">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.entity.Statistics">
    <children>
       <HBox layoutX="14.0" layoutY="14.0" prefHeight="520.0" prefWidth="770.0">
          <children>
@@ -79,10 +79,10 @@
                <children>
                   <StackedBarChart fx:id="statisticsChart" title="Lejátszott napi zenék száma">
                     <xAxis>
-                      <CategoryAxis animated="false" label="napok" side="BOTTOM" tickLabelGap="1" tickLabelRotation="90.0" />
+                      <CategoryAxis animated="false" label="napok" side="BOTTOM" tickLabelGap="1" tickLabelRotation="90.0" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis animated="false" minorTickCount="0" minorTickLength="0" tickLabelGap="1" tickLength="1" tickUnit="1" />
+                      <NumberAxis fx:id="yAxis" animated="false" label="Lejátszott zenék száma" minorTickCount="0" minorTickLength="0" tickLabelGap="1" tickLength="1" tickUnit="1" />
                     </yAxis>
                   </StackedBarChart>
                </children></VBox>

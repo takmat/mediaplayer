@@ -3,6 +3,7 @@ package sample.entity;
 import com.sun.javafx.charts.Legend;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.util.Pair;
 import sample.interfaces.PlayList;
 
 import java.io.BufferedReader;
@@ -71,6 +72,7 @@ public class Statistics implements PlayList {
     }
     private void loadStatistics(){
         File f = new File("./logfile.log");
+        System.out.println(f.exists());
         if(f.exists()){
             try (BufferedReader br = new BufferedReader(new FileReader(f))){
                 String line;
@@ -87,10 +89,13 @@ public class Statistics implements PlayList {
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 LocalDate now = LocalDate.now();
                 dateMap = Arrays.asList(DayOfWeek.values()).stream().map(now::with).map( d -> d.format(dtf)).collect(Collectors.toMap(str -> str, i -> 0));
+                int maxListened=1;
+
                 while ((line = br.readLine()) != null){
+                    //System.out.println(line);
                     Matcher m = playedTill.matcher(line);
                     if(m.find()){
-
+                        //System.out.println("lejátszás");
                         String[] temp1 = m.group(1).split("=");
                         String[] temp2 = temp1[1].split(":");
                         min = Integer.parseInt(temp2[0])*60;
@@ -99,39 +104,59 @@ public class Statistics implements PlayList {
                         musics++;
                     }
                     
-                    Matcher m3 = datePattern.matcher(line);
-                    String date = null;
-                    if(m3.find()){
-                        date = m3.group();
-                    }
+
                     Matcher m2 = length.matcher(line);
                     if(m2.find()){
-
+                        //System.out.println("végig");
                         String[] temp1 = m2.group(1).split("=");
                         String[] temp2 = temp1[1].split(":");
                         min = Integer.parseInt(temp2[0])*60;
                         lengthOfMusic = min+Integer.parseInt(temp2[1]);
                         if(lengthOfMusic-sec==0){
                             sumOfListenedMusic++;
-                            if(date != null){
-                                Integer i = dateMap.get(date)+1;
+
+                        }
+                    }
+                    Matcher m3 = datePattern.matcher(line);
+                    String date;
+
+                    int minListened=0;
+
+                    if(m3.find()){
+                        //System.out.println("dátum");
+                        date = m3.group();
+                        if(date != null){
+                            if(dateMap.containsKey(date)){
+                                int i = dateMap.get(date)+1;
+
+                                if(i>maxListened){
+                                    maxListened=i;
+                                }
                                 dateMap.replace(date, i);
                             }
+                            else{
+                                dateMap.put(date,1);
+                            }
+
                         }
                     }
                     
                 }
+
                 int hour = sum/3600;
                 min = sum/60-(hour*60);
                 sec = sum%60;
-                System.out.println(sum);
-                System.out.println("min: "+min);
                 String duration=formatter.format(hour)+":"+formatter.format(min)+":"+formatter.format(sec);
-                System.out.println("összes hallgatott idő "+duration);
-                loadDataIntoChart(dateMap);
+                //System.out.println("összes hallgatott idő "+duration);
                 tillTheVeryEnd.setText(String.valueOf(sumOfListenedMusic));
                 sumDuration.setText(duration);
                 sumMusics.setText(String.valueOf(musics));
+
+                loadDataIntoChart(dateMap,maxListened);
+               /*for(String key : dateMap.keySet()){
+                   System.out.println("key: "+key+" data:"+dateMap.get(key));
+               }*/
+
             }
             catch (Exception ex){
 
@@ -139,7 +164,7 @@ public class Statistics implements PlayList {
         }
     }
     
-    private void loadDataIntoChart(Map<String,Integer> dateMap){
+    private void loadDataIntoChart(Map<String,Integer> dateMap,int maxListened){
         for(String dateString : dateMap.keySet().stream().sorted().collect(toList())){
             XYChart.Series<String, Number> series1 = new XYChart.Series<>();
             series1.getData().add(new XYChart.Data<>(dateString, dateMap.get(dateString)));
@@ -147,9 +172,10 @@ public class Statistics implements PlayList {
         }
         Legend legend = (Legend) statisticsChart.lookup(".chart-legend");
         legend.getItems().clear();
+
         yAxis.setAutoRanging(false);
-        yAxis.setLowerBound(20);
-        yAxis.setUpperBound(56);
+        yAxis.setLowerBound(1);
+        yAxis.setUpperBound(maxListened);
         yAxis.setTickUnit(1);
         yAxis.setMinorTickLength(0);
         yAxis.setMinorTickCount(0);
