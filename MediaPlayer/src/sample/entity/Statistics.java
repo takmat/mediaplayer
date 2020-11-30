@@ -194,16 +194,16 @@ public class Statistics implements PlayList {
                         .filter( k -> !"".equals(k.getArtist()))
                         .map(k -> k.getArtist())
                         .collect(Collectors.groupingBy( e -> e, Collectors.counting()));
-                loadPieChart(counterMap);
+                //musicList.forEach( t -> System.out.println(t.getArtist() + " " + t.getTitle()));
+                
                 //System.out.println("összes hallgatott idő "+duration);
                 favoriteArtist(counterMap, musicList);
                 tillTheVeryEnd.setText(String.valueOf(sumOfListenedMusic));
                 sumDuration.setText(duration);
                 sumMusics.setText(String.valueOf(musics));
-
                 loadDataIntoChart(dateMap,maxListened);
+                loadPieChart(counterMap);
                 
-
             }
             catch (Exception ex){
 
@@ -237,7 +237,7 @@ public class Statistics implements PlayList {
         favoritePieChart.setData(FXCollections.observableArrayList(pieChartData));
         Legend legend = (Legend) favoritePieChart.lookup(".chart-legend");
         legend.getItems().clear();
-        favoritePieChart.labelsVisibleProperty().setValue(true);
+        //favoritePieChart.labelsVisibleProperty().setValue(true);
     }
     private void favoriteArtist(Map<String, Long> counterMap, ArrayList<LogMusic> musicList){
         String fav = counterMap.keySet().stream().sorted((k1,k2) -> counterMap.get(k2).compareTo(counterMap.get(k1))).limit(1).collect(Collectors.joining());
