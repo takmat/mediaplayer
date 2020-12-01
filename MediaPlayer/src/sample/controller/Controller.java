@@ -89,6 +89,8 @@ public class Controller implements PlayList {
     @FXML
     BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
     private SpectrumInterface spectrum = new Spectrum();
+    @FXML
+    Tooltip timeTooltip;
 
     public Controller() {
     }
@@ -142,7 +144,7 @@ public class Controller implements PlayList {
         });
         mediaList = new MediaList(time, volumeAdjuster, nowPlaying, duration, volumeNumber, mediaPlayer.get());
         spectrum.initSpectrumChart(xAxis, yAxis, bc, mediaPlayer);
-        
+
     }
     public void stopPlaying(){
         mediaList.stopPlay(); 
@@ -197,6 +199,13 @@ public class Controller implements PlayList {
     @FXML
     private void getFiles() {
         FileChooser fc = new FileChooser();
+        String path =System.getProperty("user.home").replace("\\","/")+"/music";
+        File musicDir = new File(path);
+        //System.out.println(musicDir.exists());
+        if(musicDir.exists())
+        {
+            fc.setInitialDirectory(musicDir);
+        }
         Stage stage = new Stage();
         fc.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Médiafájlok", "*.mp3") //,"*.jpeg","*.jpg","*.bmp"
@@ -213,7 +222,7 @@ public class Controller implements PlayList {
                     Music music = new Music(f.toURI().toString(), mediaPlayer);
                     currentMusic = music;
                     playListOfMusic.add(music);
-                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed);
+                    music.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed,timeTooltip);
                     music.setButtonsToMusicList();
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(music);
@@ -339,7 +348,7 @@ public class Controller implements PlayList {
                     playList.add(path);
                     Music m = new Music(path, mediaPlayer);
                     playListOfMusic.add(m);
-                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed);
+                    m.passReferences(time, volumeAdjuster, playAndPause, nowPlaying, duration, volumeNumber, mediaList, spectrum, nextMedia, previousMedia,playSpeed,timeTooltip);
                     this.spectrum.passReferences(xAxis, yAxis, bc, mediaPlayer);
                     addContextMenuToMusic(m);
                     listOfMedia.getChildren().add(m);

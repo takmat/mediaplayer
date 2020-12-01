@@ -64,6 +64,7 @@ public class Statistics implements PlayList {
     Label titleLabel, artistLabel;
     @FXML
     DatePicker datePicker;
+
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 
     
@@ -89,14 +90,8 @@ public class Statistics implements PlayList {
         }
         LocalDate now = LocalDate.now();
         datePicker.setValue(now);
-        datePicker.valueProperty().addListener(new ChangeListener<LocalDate>(){
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                loadStatistics(newValue);
-            }
-            
-        });
-        
+        datePicker.valueProperty().addListener((observable, oldValue, newValue) -> loadStatistics(newValue));
+
         loadStatistics(now);
         
 
@@ -138,10 +133,11 @@ public class Statistics implements PlayList {
                         sum=sum+sec;
                         musics++;
                     }
-                    Matcher artistMatcher = artistPattern.matcher(line);
-                    Matcher titleMathcer = titlePattern.matcher(line);
+
 
                     Matcher m2 = length.matcher(line);
+                    Matcher artistMatcher = artistPattern.matcher(line);
+                    Matcher titleMathcer = titlePattern.matcher(line);
                     if(m2.find()){
                         //System.out.println("végig");
                         String[] temp1 = m2.group(1).split("=");
@@ -170,16 +166,18 @@ public class Statistics implements PlayList {
                                         LogMusic music = new LogMusic(artistMatcher.group().replace("|", "").replace("artist=", "").trim(),
                                                 titleMathcer.group().replace("title=", "").replace("|","").trim());
                                         musicList.add(music);
-                                    }else{
+                                    }
+                                    else{
                                         dateMap.put(date,1);
                                     }
-                                    
+
                                 }
                             }
                         }
-                    
+
                     }
-                    int minListened=0;
+
+
 
                     
                     
@@ -194,8 +192,8 @@ public class Statistics implements PlayList {
                         .filter( k -> !"".equals(k.getArtist()))
                         .map(k -> k.getArtist())
                         .collect(Collectors.groupingBy( e -> e, Collectors.counting()));
-                //musicList.forEach( t -> System.out.println(t.getArtist() + " " + t.getTitle()));
-                
+                musicList.forEach( t -> System.out.println(t.getArtist() + " " + t.getTitle()));
+
                 //System.out.println("összes hallgatott idő "+duration);
                 favoriteArtist(counterMap, musicList);
                 tillTheVeryEnd.setText(String.valueOf(sumOfListenedMusic));
@@ -203,7 +201,7 @@ public class Statistics implements PlayList {
                 sumMusics.setText(String.valueOf(musics));
                 loadDataIntoChart(dateMap,maxListened);
                 loadPieChart(counterMap);
-                
+
             }
             catch (Exception ex){
 
@@ -237,6 +235,9 @@ public class Statistics implements PlayList {
         favoritePieChart.setData(FXCollections.observableArrayList(pieChartData));
         Legend legend = (Legend) favoritePieChart.lookup(".chart-legend");
         legend.getItems().clear();
+        for(String string : counterMap.keySet()){
+            System.out.println(string+" "+ counterMap.get(string));
+        }
         //favoritePieChart.labelsVisibleProperty().setValue(true);
     }
     private void favoriteArtist(Map<String, Long> counterMap, ArrayList<LogMusic> musicList){

@@ -11,13 +11,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="529.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.Controller" fx:id="samplePane">
+<BorderPane fx:id="samplePane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="529.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.Controller">
    <bottom>
       <VBox prefHeight="125.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
@@ -25,6 +26,9 @@
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
+               <tooltip>
+                  <Tooltip fx:id="timeTooltip" autoFix="false" consumeAutoHidingEvents="false" contentDisplay="TOP" text="Empty Tooltip" />
+               </tooltip>
             </Slider>
             <HBox alignment="CENTER" prefHeight="66.0" prefWidth="798.0">
                <children>
@@ -45,7 +49,7 @@
                         </VBox>
                      </children>
                   </HBox>
-                  <Button fx:id="stopMedia" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="71.0" prefWidth="71.0" onAction="#stopPlaying"/>
+                  <Button fx:id="stopMedia" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#stopPlaying" prefHeight="71.0" prefWidth="71.0" />
                   <Button fx:id="previousMedia" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="71.0" prefWidth="71.0" />
                   <Button fx:id="MediaPlayButton" contentDisplay="BOTTOM" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#playAndPauseMedia" />
                   <Button fx:id="nextMedia" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="71.0" prefWidth="71.0" />
@@ -86,6 +90,9 @@
                </VBox.margin>
             </HBox>
          </children>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
       </VBox>
    </bottom>
    <center>

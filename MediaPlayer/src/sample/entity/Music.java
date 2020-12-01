@@ -6,8 +6,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
@@ -70,7 +67,7 @@ public class Music extends Pane implements PlayList{
     private MediaListInterface mediaList;
     private SpectrumInterface spectrum = new Spectrum();
     private DefaultLogger logger = DefaultLogger.getInstance();
-
+    private Tooltip timeTooltip;
     
     public Media getMusic() {
         return music;
@@ -258,7 +255,7 @@ public class Music extends Pane implements PlayList{
 
     public void passReferences(Slider time, Slider volumeAdjuster, 
             ImageView playAndPause, Label nowPlayed,Label duration,Label volume,MediaListInterface mediaList, 
-            SpectrumInterface spectrum, Button nextMedia, Button previousMedia,Slider playSpeed){
+            SpectrumInterface spectrum, Button nextMedia, Button previousMedia,Slider playSpeed,Tooltip timeTooltip){
         this.nowPlayed=nowPlayed;
         this.time = time;
         this.volumeAdjuster = volumeAdjuster;
@@ -270,6 +267,7 @@ public class Music extends Pane implements PlayList{
         this.nextButton = nextMedia;
         this.previousButton = previousMedia;
         this.playSpeed = playSpeed;
+        this.timeTooltip=timeTooltip;
         bindControlls(this);
     }
     private void loadUI(){
@@ -397,6 +395,7 @@ public class Music extends Pane implements PlayList{
             int currentmin = (int) newValue.toSeconds()/60;
             int currentsec = (int) newValue.toSeconds()%60;
             //length.setText(min+":"+sec);
+            timeTooltip.setText(formatter.format(currentmin)+":"+formatter.format(currentsec) +" / "+m.length.getText());
             m.durationProperty.set(formatter.format(currentmin)+":"+formatter.format(currentsec) +" / "+m.length.getText());
             duration.textProperty().bind(m.durationProperty);
         });
